@@ -1787,19 +1787,277 @@ nodetool repair <span class="cheat-arg">keyspace</span></div>
 @media(max-width:900px){.tut-layout{grid-template-columns:1fr;}.tut-sidebar{position:static;max-height:300px;}}
 </style>
 
+
+<!-- QUERY EXPLAINER -->
+<section id="query-explainer" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">12 — Query Explainer</div>
+    <h2 class="section-title">SQL Query Explainer</h2>
+    <p class="section-desc">Paste any SQL query and get a plain-English breakdown of every clause, what it does, indexes it needs, and potential issues.</p>
+  </div>
+  <div class="qex-wrap">
+    <div class="qex-top">
+      <div class="qex-input-side">
+        <div class="qex-label">Paste your SQL query</div>
+        <textarea class="qex-textarea" id="qex-input" placeholder="SELECT u.name, COUNT(o.id) AS order_count, SUM(o.total) AS revenue
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.created_at > '2026-01-01'
+  AND o.status = 'completed'
+GROUP BY u.name
+HAVING COUNT(o.id) > 5
+ORDER BY revenue DESC
+LIMIT 20;"></textarea>
+        <div class="qex-actions">
+          <div class="qex-examples">
+            <span class="qex-example-label">Try:</span>
+            <button class="qex-ex-btn" onclick="qexLoad('simple')">Simple SELECT</button>
+            <button class="qex-ex-btn" onclick="qexLoad('join')">JOIN query</button>
+            <button class="qex-ex-btn" onclick="qexLoad('window')">Window function</button>
+            <button class="qex-ex-btn" onclick="qexLoad('cte')">CTE</button>
+            <button class="qex-ex-btn" onclick="qexLoad('subquery')">Subquery</button>
+          </div>
+          <button class="qex-btn" onclick="explainQuery()">Explain This Query ✦</button>
+        </div>
+      </div>
+      <div class="qex-output-side" id="qex-output">
+        <div class="qex-placeholder">
+          <div style="font-size:2rem;margin-bottom:.75rem">🔍</div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:.4rem">Query breakdown will appear here</div>
+          <div style="font-size:.82rem;color:var(--text3)">Paste a SQL query on the left and click Explain</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GLOSSARY -->
+<section id="glossary" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">13 — Glossary</div>
+    <h2 class="section-title">Database Glossary</h2>
+    <p class="section-desc">100+ database terms explained in plain English for DevOps & Platform Engineers.</p>
+  </div>
+  <div class="glos-search-wrap">
+    <input class="search-bar" type="text" id="glos-search" placeholder="Search terms — try 'ACID', 'WAL', 'sharding', 'B-tree'..." oninput="filterGlossary(this.value)">
+  </div>
+  <div class="glos-filter-row">
+    <button class="filter-tag active" onclick="glosCategory(this,'all')">All</button>
+    <button class="filter-tag" onclick="glosCategory(this,'core')">Core Concepts</button>
+    <button class="filter-tag" onclick="glosCategory(this,'storage')">Storage & I/O</button>
+    <button class="filter-tag" onclick="glosCategory(this,'replication')">Replication & HA</button>
+    <button class="filter-tag" onclick="glosCategory(this,'performance')">Performance</button>
+    <button class="filter-tag" onclick="glosCategory(this,'k8s')">K8s & Cloud</button>
+    <button class="filter-tag" onclick="glosCategory(this,'nosql')">NoSQL</button>
+  </div>
+  <div class="glos-grid" id="glos-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DB KNOWLEDGE QUIZ -->
+<section id="quiz" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">14 — Quiz</div>
+    <h2 class="section-title">DB Knowledge Quiz</h2>
+    <p class="section-desc">Test your database knowledge across all categories. 60 questions, scored, with detailed explanations.</p>
+  </div>
+  <div class="quiz-wrap" id="quiz-wrap">
+    <div class="quiz-start" id="quiz-start">
+      <div style="font-size:3rem;margin-bottom:1rem">🧠</div>
+      <div class="quiz-start-title">Ready to test your DB knowledge?</div>
+      <div class="quiz-start-sub">60 questions across PostgreSQL, MySQL, MongoDB, Redis, Cassandra, ClickHouse, Elasticsearch, K8s operators, and more. Each question has a detailed explanation.</div>
+      <div class="quiz-category-pick">
+        <div class="quiz-cat-label">Choose category:</div>
+        <div class="quiz-cats">
+          <button class="quiz-cat-btn active" onclick="selectQuizCat(this,'all')">All Topics</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'sql')">SQL & Relational</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'nosql')">NoSQL</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'perf')">Performance</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'k8s')">K8s & Operators</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'replication')">Replication & HA</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:1.5rem" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+    <div class="quiz-active" id="quiz-active" style="display:none">
+      <div class="quiz-header-row">
+        <div class="quiz-progress-wrap">
+          <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-prog-fill"></div></div>
+          <div class="quiz-prog-text" id="quiz-prog-text">Question 1 of 10</div>
+        </div>
+        <div class="quiz-score-badge" id="quiz-score-badge">Score: 0</div>
+      </div>
+      <div class="quiz-q-wrap" id="quiz-q-wrap"></div>
+    </div>
+    <div class="quiz-result" id="quiz-result" style="display:none"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DAILY DB CHALLENGE -->
+<section id="daily-challenge" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">15 — Daily Challenge</div>
+    <h2 class="section-title">Daily DB Challenge</h2>
+    <p class="section-desc">One new database challenge every day. Track your streak and progress.</p>
+  </div>
+  <div class="daily-layout">
+    <div class="daily-main">
+      <div class="daily-card" id="daily-card"></div>
+    </div>
+    <div class="daily-sidebar">
+      <div class="daily-streak-card">
+        <div class="daily-streak-num" id="streak-num">0</div>
+        <div class="daily-streak-label">Day Streak 🔥</div>
+      </div>
+      <div class="daily-history-card">
+        <div class="daily-hist-title">Recent Challenges</div>
+        <div id="daily-history"></div>
+      </div>
+      <div class="daily-cats-card">
+        <div class="daily-hist-title">Challenge Topics</div>
+        <div class="daily-topic-grid" id="daily-topics"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* ===== QUERY EXPLAINER ===== */
+.qex-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+.qex-top{display:grid;grid-template-columns:1fr 1fr;min-height:420px;}
+.qex-input-side{padding:1.5rem;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:1rem;}
+.qex-output-side{padding:1.5rem;overflow-y:auto;}
+.qex-label{font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600;}
+.qex-textarea{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem;font-family:var(--mono);font-size:.78rem;color:var(--accent3);line-height:1.8;resize:none;outline:none;min-height:240px;}
+.qex-textarea:focus{border-color:var(--accent);}
+.qex-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.qex-examples{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.qex-example-label{font-size:.7rem;color:var(--text3);}
+.qex-ex-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:20px;font-size:.72rem;cursor:pointer;font-family:var(--font);transition:all .2s;}
+.qex-ex-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.qex-btn{background:var(--accent2);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-family:var(--font);font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.qex-btn:hover{background:#6a4fd4;transform:translateY(-1px);}
+.qex-btn:disabled{opacity:.5;cursor:not-allowed;}
+.qex-placeholder{text-align:center;padding:3rem 1rem;color:var(--text2);}
+.qex-clause{margin-bottom:1.25rem;}
+.qex-clause-name{font-family:var(--mono);font-size:.75rem;color:var(--accent);background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:.5rem;}
+.qex-clause-sql{font-family:var(--mono);font-size:.76rem;color:var(--accent3);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem;margin-bottom:.4rem;white-space:pre-wrap;word-break:break-all;}
+.qex-clause-desc{font-size:.83rem;color:var(--text2);line-height:1.7;}
+.qex-divider{height:1px;background:var(--border);margin:1rem 0;}
+.qex-tag{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:4px;margin:.2rem .1rem;}
+.qex-tag-warn{background:rgba(247,201,79,.1);color:var(--accent5);border:1px solid rgba(247,201,79,.2);}
+.qex-tag-good{background:rgba(0,212,170,.1);color:var(--accent3);border:1px solid rgba(0,212,170,.2);}
+.qex-tag-info{background:rgba(79,142,247,.1);color:var(--accent);border:1px solid rgba(79,142,247,.2);}
+.qex-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:700;margin:.75rem 0 .4rem;}
+@media(max-width:768px){.qex-top{grid-template-columns:1fr;}.qex-input-side{border-right:none;border-bottom:1px solid var(--border);}}
+
+/* ===== GLOSSARY ===== */
+.glos-search-wrap{margin-bottom:1rem;}
+.glos-filter-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.glos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;}
+.glos-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:all .2s;}
+.glos-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.glos-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;gap:.5rem;}
+.glos-term{font-family:var(--mono);font-size:.9rem;font-weight:600;color:var(--accent);line-height:1.3;}
+.glos-cat{font-size:.62rem;padding:2px 8px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);white-space:nowrap;flex-shrink:0;}
+.glos-def{font-size:.82rem;color:var(--text2);line-height:1.7;}
+.glos-also{margin-top:.5rem;font-size:.73rem;color:var(--text3);}
+.glos-also span{color:var(--accent2);cursor:pointer;}
+.glos-also span:hover{text-decoration:underline;}
+
+/* ===== QUIZ ===== */
+.quiz-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;min-height:400px;}
+.quiz-start{text-align:center;padding:2rem 1rem;}
+.quiz-start-title{font-family:var(--serif);font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:.75rem;}
+.quiz-start-sub{color:var(--text2);font-size:.9rem;line-height:1.7;max-width:540px;margin:0 auto 1.5rem;}
+.quiz-category-pick{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;display:inline-block;text-align:left;}
+.quiz-cat-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:.6rem;}
+.quiz-cats{display:flex;flex-wrap:wrap;gap:.5rem;}
+.quiz-cat-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:6px 14px;border-radius:20px;font-size:.78rem;cursor:pointer;font-family:var(--font);transition:all .2s;}
+.quiz-cat-btn:hover{border-color:var(--accent);color:var(--accent);}
+.quiz-cat-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.quiz-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;gap:1rem;}
+.quiz-prog-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-bottom:.4rem;}
+.quiz-prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s;}
+.quiz-prog-text{font-size:.75rem;color:var(--text3);}
+.quiz-prog-wrap{flex:1;}
+.quiz-score-badge{font-family:var(--mono);font-size:.8rem;padding:6px 14px;border-radius:8px;background:rgba(0,212,170,.1);color:var(--accent3);border:1px solid rgba(0,212,170,.2);white-space:nowrap;}
+.quiz-q-wrap{}
+.quiz-question{font-size:1.1rem;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:1.5rem;}
+.quiz-q-cat{font-family:var(--mono);font-size:.65rem;color:var(--accent2);background:rgba(124,95,230,.1);border:1px solid rgba(124,95,230,.2);padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:.75rem;}
+.quiz-options{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem;}
+.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.1rem;cursor:pointer;font-size:.87rem;color:var(--text2);text-align:left;font-family:var(--font);transition:all .2s;display:flex;align-items:flex-start;gap:.75rem;}
+.quiz-opt:hover:not(:disabled){border-color:var(--accent);color:var(--text);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-opt.correct{border-color:var(--accent3);background:rgba(0,212,170,.08);color:var(--accent3);}
+.quiz-opt.wrong{border-color:var(--accent4);background:rgba(247,114,79,.08);color:var(--accent4);}
+.quiz-opt-letter{width:22px;height:22px;border-radius:50%;background:var(--bg4);border:1px solid var(--border);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);}
+.quiz-explanation{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;font-size:.84rem;color:var(--text2);line-height:1.7;margin-bottom:1.25rem;}
+.quiz-explanation strong{color:var(--accent3);}
+.quiz-next-btn{background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:var(--font);font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;}
+.quiz-next-btn:hover{background:#3a7ae8;}
+.quiz-result{text-align:center;padding:2rem;}
+.quiz-result-score{font-family:var(--serif);font-size:4rem;font-weight:900;margin-bottom:.25rem;}
+.quiz-result-label{font-size:1rem;color:var(--text2);margin-bottom:1.5rem;}
+.quiz-result-stats{display:flex;gap:1.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;}
+.quiz-stat-item{text-align:center;}
+.quiz-stat-num{font-size:1.8rem;font-weight:700;}
+.quiz-stat-lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+
+/* ===== DAILY CHALLENGE ===== */
+.daily-layout{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start;}
+.daily-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;}
+.daily-badge{font-family:var(--mono);font-size:.65rem;color:var(--accent5);background:rgba(247,201,79,.1);border:1px solid rgba(247,201,79,.2);padding:3px 10px;border-radius:4px;display:inline-block;margin-bottom:1rem;}
+.daily-title{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:.5rem;line-height:1.3;}
+.daily-meta{display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;}
+.daily-tag{font-size:.7rem;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);}
+.daily-prompt{font-size:.92rem;color:var(--text2);line-height:1.8;margin-bottom:1.5rem;}
+.daily-textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius);padding:1rem;font-family:var(--mono);font-size:.78rem;color:var(--accent3);line-height:1.8;resize:vertical;outline:none;min-height:160px;margin-bottom:1rem;}
+.daily-textarea:focus{border-color:var(--accent);}
+.daily-btn-row{display:flex;gap:.75rem;flex-wrap:wrap;}
+.daily-submit-btn{background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:var(--font);font-weight:600;font-size:.87rem;cursor:pointer;transition:all .2s;}
+.daily-submit-btn:hover{background:#3a7ae8;}
+.daily-hint-btn{background:transparent;border:1px solid var(--border2);color:var(--text2);padding:10px 18px;border-radius:8px;font-family:var(--font);font-size:.87rem;cursor:pointer;transition:all .2s;}
+.daily-hint-btn:hover{border-color:var(--accent5);color:var(--accent5);}
+.daily-solution{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:1rem;font-size:.84rem;color:var(--text2);line-height:1.7;display:none;}
+.daily-solution.show{display:block;}
+.daily-solution-code{font-family:var(--mono);font-size:.76rem;color:var(--accent3);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.75rem 1rem;margin:.5rem 0;white-space:pre-wrap;}
+.daily-sidebar{display:flex;flex-direction:column;gap:1rem;}
+.daily-streak-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;}
+.daily-streak-num{font-family:var(--serif);font-size:3.5rem;font-weight:900;color:var(--accent5);line-height:1;}
+.daily-streak-label{font-size:.78rem;color:var(--text3);margin-top:.25rem;}
+.daily-history-card,.daily-cats-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.daily-hist-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:.75rem;font-weight:700;}
+.daily-hist-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.78rem;}
+.daily-hist-item:last-child{border-bottom:none;}
+.daily-hist-date{color:var(--text3);}
+.daily-hist-status{font-size:.65rem;padding:2px 8px;border-radius:20px;}
+.daily-hist-done{background:rgba(0,212,170,.1);color:var(--accent3);}
+.daily-hist-skip{background:rgba(247,114,79,.1);color:var(--accent4);}
+.daily-topic-grid{display:flex;flex-wrap:wrap;gap:.4rem;}
+.daily-topic-tag{font-size:.68rem;padding:3px 9px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s;}
+.daily-topic-tag:hover{border-color:var(--accent);color:var(--accent);}
+@media(max-width:900px){.daily-layout{grid-template-columns:1fr;}}
+</style>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">eknathalabs / db</div>
   <p class="footer-sub">Built with ♥ by Eknatha Reddy — Platform Engineer & DevOps Practitioner</p>
   <div class="footer-links">
     <a href="https://eknathalabs.com" target="_blank">eknathalabs.com</a>
-    <a href="https://github.com/eknathareddyp" target="_blank">GitHub</a>
+    <a href="https://github.com/eknatha" target="_blank">GitHub</a>
     <a href="https://linux.eknathalabs.com" target="_blank">Linux Lab</a>
     <a href="https://kubelab.eknathalabs.com" target="_blank">KubeLab</a>
     <a href="https://terraform.eknathalabs.com" target="_blank">Terraform Lab</a>
     <a href="https://blog.eknathalabs.com" target="_blank">Blog</a>
   </div>
-  <p class="footer-copy">© 2025 Eknatha Reddy — db.eknathalabs.com — All databases, all patterns, one place.</p>
+  <p class="footer-copy">© 2026 Eknatha Reddy — db.eknathalabs.com — All databases, all patterns, one place.</p>
 </footer>
 
 <script>
@@ -2602,7 +2860,7 @@ pg_dump -h localhost -U postgres -Fd -j4 mydb -f /backup/mydb_dir/  # parallel
 pg_dumpall -h localhost -U postgres > all.sql
 
 # Restore
-pg_restore -h localhost -U postgres -d mydb -j4 mydb_20250101.dump
+pg_restore -h localhost -U postgres -d mydb -j4 mydb_20260101.dump
 psql -U postgres mydb < mydb.sql
 
 # pgBackRest — production PITR backup
@@ -2621,7 +2879,7 @@ pgbackrest --stanza=mydb backup --type=incr
 
 # PITR restore to specific timestamp
 pgbackrest --stanza=mydb restore \\
-  --target="2025-05-01 14:00:00" \\
+  --target="2026-05-01 14:00:00" \\
   --target-action=promote`)}
 </div>
 <div class="tut-section" id="pg-perf">
@@ -2887,7 +3145,7 @@ mysqldump -u root -p --single-transaction --routines --triggers \\
 mysqldump -u root -p --all-databases --single-transaction > all.sql
 
 # Restore
-mysql -u root -p mydb < mydb_20250101.sql
+mysql -u root -p mydb < mydb_20260101.sql
 
 # Physical hot backup — Percona XtraBackup (no locking)
 sudo apt install percona-xtrabackup-80
@@ -2998,7 +3256,7 @@ db.users.insertMany([{name:"Alice"},{name:"Bob"}])
 // FIND
 db.users.find({role:"admin"})
 db.users.find({role:"admin"},{name:1,email:1,_id:0})       // projection
-db.users.find({joined:{$gt:new Date("2025-01-01")}})        // date range
+db.users.find({joined:{$gt:new Date("2026-01-01")}})        // date range
 db.users.find({tags:{$in:["devops","k8s"]}})                // array match
 db.users.find({$or:[{role:"admin"},{role:"editor"}]})       // OR
 db.users.find().sort({joined:-1}).limit(10).skip(0)         // paginate
@@ -3120,8 +3378,8 @@ mongodump --uri="mongodb://user:pass@host:27017" --gzip --out=/backup/$(date +%Y
 mongodump --uri="mongodb://..." --db=mydb --collection=orders --out=/backup/
 
 # Restore
-mongorestore --uri="mongodb://user:pass@host:27017" --gzip /backup/20250101/
-mongorestore --uri="..." --nsInclude="mydb.orders" /backup/20250101/`)}
+mongorestore --uri="mongodb://user:pass@host:27017" --gzip /backup/20260101/
+mongorestore --uri="..." --nsInclude="mydb.orders" /backup/20260101/`)}
 </div>
 <div class="tut-section" id="mg-k8s">
 ${h2('mg-k8s','☸️','Kubernetes — MongoDB Community Operator')}
@@ -3404,7 +3662,7 @@ SELECT * FROM sensor_readings
 WHERE device_id = a1b2c3d4-e5f6-7890-abcd-ef1234567890 LIMIT 100;
 
 SELECT * FROM sensor_readings
-WHERE device_id = ? AND read_time > '2025-01-01' AND read_time < '2025-02-01';
+WHERE device_id = ? AND read_time > '2026-01-01' AND read_time < '2026-02-01';
 
 -- Lightweight transaction (compare-and-set)
 INSERT INTO users (id,email,name) VALUES (uuid(),'e@lab.com','Eknatha')
@@ -4490,7 +4748,7 @@ curl -X PUT "$HOST/logs" $AUTH -H 'Content-Type: application/json' -d '{
 
 # Index documents
 curl -X POST "$HOST/logs/_doc" $AUTH -H 'Content-Type: application/json' -d '{
-  "timestamp":"2025-05-08T10:00:00Z",
+  "timestamp":"2026-05-08T10:00:00Z",
   "level":"ERROR",
   "service":"api-gateway",
   "message":"Connection timeout to database",
@@ -4656,7 +4914,7 @@ aws dynamodb put-item $ENDPOINT --table-name Users --item '{
   "email":{"S":"e@lab.com"},
   "name":{"S":"Eknatha"},
   "role":{"S":"admin"},
-  "createdAt":{"S":"2025-05-08T10:00:00Z"}
+  "createdAt":{"S":"2026-05-08T10:00:00Z"}
 }'
 
 # Get item by primary key
@@ -4667,7 +4925,7 @@ aws dynamodb get-item $ENDPOINT --table-name Users \\
 aws dynamodb query $ENDPOINT \\
   --table-name Orders \\
   --key-condition-expression "userId = :uid AND createdAt > :date" \\
-  --expression-attribute-values '{":uid":{"S":"u1"},":date":{"S":"2025-01-01"}}'
+  --expression-attribute-values '{":uid":{"S":"u1"},":date":{"S":"2026-01-01"}}'
 
 # Update — atomic counter
 aws dynamodb update-item $ENDPOINT \\
@@ -4688,7 +4946,7 @@ ${h2('ddb-design','🎯','Single Table Design')}
 ${p('DynamoDB shines with Single Table Design — store all entity types in one table using PK/SK prefixes to separate entity types and enable access patterns.')}
 ${cb('bash',`# Entity type   PK                SK                 Data
 # User profile:  USER#u1           PROFILE            {name, email, ...}
-# User orders:   USER#u1           ORDER#2025-05-01   {total, status}
+# User orders:   USER#u1           ORDER#2026-05-01   {total, status}
 # Order items:   ORDER#o1          ITEM#i1            {product, qty, price}
 # Product:       PRODUCT#p1        METADATA           {name, price, stock}
 
@@ -4700,7 +4958,7 @@ aws dynamodb query $ENDPOINT \\
     ":pk":{"S":"USER#u1"},
     ":sk":{"S":"ORDER#"}
   }'`)}
-${ul('Design around your access patterns — DynamoDB has no ad-hoc queries','Use composite sort keys for range queries: <code>ORDER#2025-05-08#00001</code>','GSIs for querying by non-primary-key attributes — plan them upfront','Condition expressions for optimistic locking and idempotency','DynamoDB Streams + Lambda for event-driven architectures')}
+${ul('Design around your access patterns — DynamoDB has no ad-hoc queries','Use composite sort keys for range queries: <code>ORDER#2026-05-08#00001</code>','GSIs for querying by non-primary-key attributes — plan them upfront','Condition expressions for optimistic locking and idempotency','DynamoDB Streams + Lambda for event-driven architectures')}
 </div>`
 };
 
@@ -4768,8 +5026,8 @@ ${h2('sq-perf','⚡','Performance Tuning')}
 ${ul('WAL mode is critical — enables concurrent reads while a write is in progress','Use transactions for batch inserts — 10K rows in a transaction is 100x faster than 10K individual inserts','Indexes work exactly as in other SQL databases — EXPLAIN QUERY PLAN to verify','<code>ANALYZE</code> periodically to update query planner statistics','Memory-mapped I/O (<code>mmap_size</code>) reduces syscalls for read-heavy workloads')}
 ${cb('sql',`-- Batch insert (transaction is critical for performance)
 BEGIN TRANSACTION;
-INSERT INTO logs VALUES (1,'event1','2025-05-08');
-INSERT INTO logs VALUES (2,'event2','2025-05-08');
+INSERT INTO logs VALUES (1,'event1','2026-05-08');
+INSERT INTO logs VALUES (2,'event2','2026-05-08');
 -- ... thousands more
 COMMIT;
 
@@ -4993,6 +5251,1010 @@ buildTutNav();
     nav.insertBefore(li,nav.lastElementChild);
   }
 })();
+
+
+
+
+
+// ============================================================
+// QUERY EXPLAINER
+// ============================================================
+const qexExamples = {
+  simple:`SELECT id, name, email, created_at
+FROM users
+WHERE status = 'active'
+  AND created_at > '2026-01-01'
+ORDER BY created_at DESC
+LIMIT 50;`,
+  join:`SELECT u.name, COUNT(o.id) AS order_count, SUM(o.total) AS revenue
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.created_at > '2026-01-01'
+  AND o.status = 'completed'
+GROUP BY u.name
+HAVING COUNT(o.id) > 5
+ORDER BY revenue DESC
+LIMIT 20;`,
+  window:`SELECT name, dept, salary,
+  RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS dept_rank,
+  SUM(salary) OVER (PARTITION BY dept) AS dept_total,
+  AVG(salary) OVER (ORDER BY hire_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg
+FROM employees
+WHERE active = true;`,
+  cte:`WITH monthly_revenue AS (
+  SELECT DATE_TRUNC('month', created_at) AS month,
+         SUM(total) AS revenue,
+         COUNT(*) AS orders
+  FROM orders
+  WHERE status = 'completed'
+  GROUP BY 1
+),
+ranked AS (
+  SELECT *, RANK() OVER (ORDER BY revenue DESC) AS rank
+  FROM monthly_revenue
+)
+SELECT * FROM ranked WHERE rank <= 3
+ORDER BY revenue DESC;`,
+  subquery:`SELECT name, email, total_spent
+FROM users
+WHERE id IN (
+  SELECT user_id
+  FROM orders
+  WHERE status = 'completed'
+  GROUP BY user_id
+  HAVING SUM(total) > 10000
+)
+AND created_at > (
+  SELECT AVG(created_at) FROM users
+)
+ORDER BY total_spent DESC;`
+};
+
+function qexLoad(type){
+  document.getElementById('qex-input').value = qexExamples[type];
+}
+
+function explainQuery(){
+  const sql = document.getElementById('qex-input').value.trim();
+  if(!sql){ return; }
+  const out = document.getElementById('qex-output');
+  out.innerHTML = '<div class="qex-placeholder"><div style="font-size:1.5rem;margin-bottom:.5rem">⚙️</div><div style="color:var(--text2)">Analyzing query...</div></div>';
+
+  setTimeout(()=>{
+    const result = parseAndExplainSQL(sql);
+    out.innerHTML = result;
+  }, 300);
+}
+
+function parseAndExplainSQL(sql){
+  const s = sql.trim().replace(/\s+/g,' ');
+  const su = s.toUpperCase();
+  let html = '';
+  const clauses = [];
+
+  // Detect query type
+  let qtype = 'SELECT';
+  if(su.startsWith('INSERT')) qtype='INSERT';
+  else if(su.startsWith('UPDATE')) qtype='UPDATE';
+  else if(su.startsWith('DELETE')) qtype='DELETE';
+  else if(su.startsWith('CREATE')) qtype='CREATE';
+  else if(su.startsWith('WITH')) qtype='CTE';
+
+  html += `<div style="margin-bottom:1rem"><span class="qex-tag qex-tag-info">Query Type: ${qtype}</span>`;
+
+  // Detect features
+  const features = [];
+  if(/\bJOIN\b/i.test(s)) features.push('JOIN');
+  if(/\bLEFT JOIN\b/i.test(s)) features.push('LEFT JOIN');
+  if(/\bGROUP BY\b/i.test(s)) features.push('GROUP BY');
+  if(/\bHAVING\b/i.test(s)) features.push('HAVING');
+  if(/\bORDER BY\b/i.test(s)) features.push('ORDER BY');
+  if(/\bLIMIT\b/i.test(s)) features.push('LIMIT');
+  if(/\bOVER\s*\(/i.test(s)) features.push('Window Function');
+  if(/\bWITH\b.*\bAS\b/i.test(s)) features.push('CTE');
+  if(/\bSELECT\b.*\bFROM\b.*\bSELECT\b/i.test(s)) features.push('Subquery');
+  if(/\bDISTINCT\b/i.test(s)) features.push('DISTINCT');
+  if(/\bUNION\b/i.test(s)) features.push('UNION');
+  if(/\bEXISTS\b/i.test(s)) features.push('EXISTS');
+  features.forEach(f => html += ` <span class="qex-tag qex-tag-info">${f}</span>`);
+  html += '</div>';
+
+  html += '<div class="qex-divider"></div>';
+  html += '<div class="qex-section-title">Clause Breakdown</div>';
+
+  // WITH / CTE
+  const cteMatch = s.match(/WITH\s+([\w\s,()]+?)\s+AS\s*\(/i);
+  if(cteMatch){
+    const names = s.match(/WITH\s+(\w+)\s+AS/i);
+    clauses.push({
+      name:'WITH (CTE)',
+      sql: names ? `WITH ${names[1]} AS (...)` : 'WITH ... AS (...)',
+      desc:`Defines a Common Table Expression — a named temporary result set. The query inside the CTE runs first and its result is available by name in the main query. CTEs improve readability and can be referenced multiple times. In PostgreSQL, CTEs are optimization fences — the planner treats them as black boxes unless you add <code>NOT MATERIALIZED</code>.`,
+      tips:['CTEs are evaluated once — good for expensive subqueries reused multiple times','RECURSIVE CTEs can traverse trees and graphs','Multiple CTEs: <code>WITH a AS (...), b AS (...) SELECT ...</code>']
+    });
+  }
+
+  // SELECT clause
+  const selMatch = s.match(/SELECT\s+(.*?)\s+FROM/i);
+  if(selMatch){
+    const cols = selMatch[1].trim();
+    let desc = 'Specifies which columns to return. ';
+    const tips = [];
+    if(cols === '*') {
+      desc += '<span class="qex-tag qex-tag-warn">SELECT * in production</span> — selects all columns which wastes bandwidth, prevents index-only scans, and breaks if schema changes.';
+      tips.push('Specify only needed columns: <code>SELECT id, name, email</code>');
+    }
+    if(/COUNT\s*\(/i.test(cols)) tips.push('<code>COUNT(id)</code> is faster than <code>COUNT(*)</code> when id is indexed');
+    if(/SUM|AVG|MIN|MAX/i.test(cols)) tips.push('Aggregate functions require a GROUP BY unless applied to the full result set');
+    if(/OVER\s*\(/i.test(cols)) tips.push('Window functions run AFTER GROUP BY and WHERE — they see the filtered, grouped result set');
+    if(/DISTINCT/i.test(cols)) tips.push('<code>DISTINCT</code> sorts all rows to deduplicate — can be slow on large tables without an index');
+    clauses.push({name:'SELECT', sql:cols.length > 80 ? cols.substring(0,77)+'...' : cols, desc, tips});
+  }
+
+  // FROM clause
+  const fromMatch = s.match(/FROM\s+([\w."`]+)/i);
+  if(fromMatch){
+    clauses.push({
+      name:'FROM',
+      sql: fromMatch[1],
+      desc:`The primary table to read from. The query planner starts here and decides whether to do a sequential scan (read every row) or use an index. For large tables (>100K rows), ensure your WHERE clause columns have indexes.`,
+      tips:['Check table row count: <code>SELECT COUNT(*) FROM '+fromMatch[1]+'</code>','Use EXPLAIN ANALYZE to see if a sequential scan is happening on a large table']
+    });
+  }
+
+  // JOIN clauses
+  const joins = s.match(/(?:LEFT|RIGHT|INNER|FULL|CROSS)?\s*JOIN\s+[\w."`]+\s+(?:\w+\s+)?ON\s+[^()WHERE]*/gi);
+  if(joins){
+    joins.forEach(j => {
+      const jtype = j.match(/^(LEFT|RIGHT|INNER|FULL|CROSS)?/i)[1] || 'INNER';
+      const descs = {
+        'LEFT':'Returns ALL rows from the left table + matching rows from right. Non-matching right rows get NULL. Use when some records may have no related data.',
+        'RIGHT':'Returns ALL rows from the right table. Rarely used — usually rewritten as a LEFT JOIN.',
+        'INNER':'Returns only rows where both tables have a match. Most common and fastest JOIN type.',
+        'FULL':'Returns all rows from both tables, NULLs where no match. Rare — expensive.',
+        'CROSS':'Cartesian product — every row × every row. Rarely intentional!'
+      };
+      clauses.push({
+        name: jtype + ' JOIN',
+        sql: j.trim().substring(0, 80),
+        desc: descs[jtype] || descs['INNER'],
+        tips:['JOIN columns should always be indexed on both sides','Each additional JOIN multiplies the potential rows — filter with WHERE early','EXPLAIN ANALYZE shows which join algorithm PostgreSQL chose (Hash Join, Nested Loop, Merge Join)']
+      });
+    });
+  }
+
+  // WHERE clause
+  const whereMatch = s.match(/WHERE\s+(.*?)(?:\s+GROUP BY|\s+ORDER BY|\s+HAVING|\s+LIMIT|$)/i);
+  if(whereMatch){
+    const cond = whereMatch[1].trim();
+    const tips = [];
+    if(/LIKE\s+'%/i.test(cond)) tips.push('<span class="qex-tag qex-tag-warn">Leading wildcard LIKE \'%..\'</span> cannot use a B-tree index — full table scan!');
+    if(/OR\b/i.test(cond)) tips.push('<code>OR</code> conditions prevent index usage — consider <code>UNION</code> or <code>IN()</code>');
+    if(/!=|<>/i.test(cond)) tips.push('Inequality operators (<code>!=</code>) skip indexes — try to restructure as positive conditions');
+    if(/NOW\(\)|CURRENT_/i.test(cond)) tips.push('Functions on indexed columns prevent index use: avoid <code>DATE(created_at) = today</code>, use <code>created_at >= today AND created_at < tomorrow</code>');
+    tips.push('Create a composite index matching your WHERE column order: most selective column first');
+    clauses.push({name:'WHERE', sql:cond.length>80?cond.substring(0,77)+'...':cond, desc:'Filters rows BEFORE grouping and aggregation. Only rows matching ALL conditions are kept. This is where indexes make the biggest difference — a good WHERE clause index can reduce a full table scan to a single index lookup.', tips});
+  }
+
+  // GROUP BY
+  const groupMatch = s.match(/GROUP BY\s+(.*?)(?:\s+HAVING|\s+ORDER BY|\s+LIMIT|$)/i);
+  if(groupMatch){
+    clauses.push({
+      name:'GROUP BY',
+      sql: groupMatch[1].trim(),
+      desc:'Collapses rows with the same value(s) into a single row. Required when using aggregate functions (COUNT, SUM, AVG, MAX, MIN). Every column in SELECT that is not an aggregate must appear in GROUP BY.',
+      tips:['GROUP BY triggers a sort/hash operation — can be expensive without an index','Adding too many columns to GROUP BY increases cardinality — fewer rows get grouped together','PostgreSQL can use indexes for GROUP BY if the column order matches the index']
+    });
+  }
+
+  // HAVING
+  const havingMatch = s.match(/HAVING\s+(.*?)(?:\s+ORDER BY|\s+LIMIT|$)/i);
+  if(havingMatch){
+    clauses.push({
+      name:'HAVING',
+      sql: havingMatch[1].trim(),
+      desc:'Filters AFTER grouping — like WHERE but for aggregated results. Because it runs after GROUP BY, it cannot use indexes. If possible, pre-filter with WHERE before grouping to reduce rows.',
+      tips:['HAVING operates on grouped rows — WHERE is faster for non-aggregate conditions','<code>HAVING COUNT(*) > 0</code> is equivalent to using INNER JOIN instead of LEFT JOIN + HAVING','Move non-aggregate filters to WHERE for better performance']
+    });
+  }
+
+  // ORDER BY
+  const orderMatch = s.match(/ORDER BY\s+(.*?)(?:\s+LIMIT|$)/i);
+  if(orderMatch){
+    const orderCols = orderMatch[1].trim();
+    clauses.push({
+      name:'ORDER BY',
+      sql: orderCols,
+      desc:'Sorts the result set. Without an index on the ORDER BY column, PostgreSQL must sort all rows in memory (or spill to disk) — expensive for large result sets. With a matching index, the rows come pre-sorted.',
+      tips:['Create an index on ORDER BY columns: <code>CREATE INDEX ON orders(created_at DESC)</code>','Increase <code>work_mem</code> if sorts spill to disk (visible in EXPLAIN: "Sort Method: external merge")','NULLS FIRST / NULLS LAST controls where NULLs appear in sorted output']
+    });
+  }
+
+  // LIMIT
+  const limitMatch = s.match(/LIMIT\s+(\d+)/i);
+  if(limitMatch){
+    clauses.push({
+      name:'LIMIT',
+      sql: limitMatch[0],
+      desc:`Returns only the first ${limitMatch[1]} rows after all filtering, grouping, and sorting. Dramatically reduces network transfer and client memory. For pagination, use LIMIT + OFFSET or keyset pagination.`,
+      tips:['OFFSET pagination gets slower as offset grows: <code>LIMIT 20 OFFSET 10000</code> still processes 10,020 rows','Keyset pagination is faster: <code>WHERE id > :last_seen_id ORDER BY id LIMIT 20</code>','Always combine LIMIT with ORDER BY — without ORDER BY, result order is undefined']
+    });
+  }
+
+  // Render clauses
+  clauses.forEach(c => {
+    html += `<div class="qex-clause">
+      <div class="qex-clause-name">${c.name}</div>
+      <div class="qex-clause-sql">${c.sql}</div>
+      <div class="qex-clause-desc">${c.desc}</div>`;
+    if(c.tips && c.tips.length){
+      html += `<ul style="margin-top:.5rem;padding-left:1rem;list-style:none">`;
+      c.tips.forEach(t => html += `<li style="font-size:.78rem;color:var(--text3);padding:.15rem 0;padding-left:1rem;position:relative"><span style="position:absolute;left:0;color:var(--accent)">→</span>${t}</li>`);
+      html += `</ul>`;
+    }
+    html += `</div><div class="qex-divider"></div>`;
+  });
+
+  // Performance summary
+  html += `<div class="qex-section-title">Performance Checklist</div>`;
+  const checks = [];
+  if(!/LIMIT\b/i.test(s)) checks.push({ok:false, msg:'No LIMIT — could return unbounded rows'});
+  else checks.push({ok:true, msg:'LIMIT present — result set bounded'});
+  if(/SELECT\s+\*/i.test(s)) checks.push({ok:false, msg:'SELECT * — specify only needed columns'});
+  else checks.push({ok:true, msg:'Specific columns selected — good'});
+  if(/LIKE\s+'%/i.test(s)) checks.push({ok:false, msg:'Leading wildcard LIKE — cannot use index'});
+  if(/ORDER BY/i.test(s)) checks.push({ok:null, msg:'ORDER BY present — ensure index exists on sort column'});
+  if(/JOIN/i.test(s)) checks.push({ok:null, msg:'JOIN detected — ensure both join columns are indexed'});
+  if(/GROUP BY/i.test(s)) checks.push({ok:null, msg:'GROUP BY — filter with WHERE before grouping when possible'});
+  if(/'WITH\b|CTE/i.test(s)||/WITH\s+\w+\s+AS/i.test(s)) checks.push({ok:true, msg:'CTE used — improves readability'});
+
+  checks.forEach(c => {
+    const icon = c.ok===true ? '✅' : c.ok===false ? '⚠️' : 'ℹ️';
+    const color = c.ok===true ? 'var(--accent3)' : c.ok===false ? 'var(--accent5)' : 'var(--text2)';
+    html += `<div style="display:flex;gap:.5rem;font-size:.8rem;padding:.3rem 0;color:${color}">${icon} ${c.msg}</div>`;
+  });
+
+  // Index suggestions
+  html += `<div class="qex-section-title" style="margin-top:1rem">Suggested Indexes</div>`;
+  const idxSuggestions = [];
+  if(whereMatch){
+    const cols = whereMatch[1].match(/\b\w+\b(?=\s*[=><])/g);
+    if(cols) idxSuggestions.push(...cols.slice(0,3));
+  }
+  if(orderMatch){
+    const cols = orderMatch[1].match(/\b\w+\b/g);
+    if(cols) idxSuggestions.push(cols[0]);
+  }
+  const uniqueIdx = [...new Set(idxSuggestions)].filter(c => !['AND','OR','NOT','IS','NULL','TRUE','FALSE','IN'].includes(c.toUpperCase()));
+  if(uniqueIdx.length){
+    const table = fromMatch ? fromMatch[1] : 'your_table';
+    html += `<div style="font-family:var(--mono);font-size:.76rem;color:var(--accent3);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.75rem 1rem;line-height:2">`;
+    if(uniqueIdx.length > 1) html += `CREATE INDEX CONCURRENTLY idx_${table}_composite ON ${table}(${uniqueIdx.join(', ')});\n`;
+    uniqueIdx.forEach(c => html += `CREATE INDEX CONCURRENTLY idx_${table}_${c} ON ${table}(${c});\n`);
+    html += `</div>`;
+  } else {
+    html += `<div style="font-size:.82rem;color:var(--text3)">Paste a more complex query for index suggestions.</div>`;
+  }
+
+  return html;
+}
+
+// ============================================================
+// GLOSSARY
+// ============================================================
+const glossaryTerms = [
+  // Core Concepts
+  {term:'ACID',cat:'core',def:'Atomicity, Consistency, Isolation, Durability — the four properties that guarantee database transactions are processed reliably. Atomicity: all or nothing. Consistency: data always valid. Isolation: concurrent transactions don\'t interfere. Durability: committed data survives crashes.',also:['BASE','Transaction','WAL']},
+  {term:'BASE',cat:'core',def:'Basically Available, Soft state, Eventually consistent — the alternative to ACID used by many NoSQL databases. Prioritizes availability and partition tolerance over immediate consistency. Data will become consistent eventually, but may be stale immediately after a write.',also:['ACID','CAP Theorem','Eventual Consistency']},
+  {term:'CAP Theorem',cat:'core',def:'Consistency, Availability, Partition Tolerance — Brewer\'s theorem states a distributed system can only guarantee 2 of these 3 at any time. CA: PostgreSQL (single node). CP: HBase, etcd, Zookeeper. AP: Cassandra, DynamoDB, CouchDB.',also:['Consistency','Availability','Partition Tolerance']},
+  {term:'MVCC',cat:'core',def:'Multi-Version Concurrency Control — a database technique where multiple versions of a row exist simultaneously. Readers see a consistent snapshot without blocking writers. PostgreSQL and MySQL InnoDB both use MVCC. Dead row versions must be cleaned up by VACUUM.',also:['VACUUM','Snapshot Isolation','Transaction']},
+  {term:'Transaction',cat:'core',def:'A unit of work that is executed atomically — either all operations succeed (COMMIT) or all are rolled back (ROLLBACK). Defined by BEGIN and COMMIT/ROLLBACK statements. Transactions enforce ACID properties.',also:['ACID','MVCC','Deadlock']},
+  {term:'Deadlock',cat:'core',def:'A situation where two or more transactions are each waiting for the other to release a lock, causing both to wait forever. Databases detect deadlocks and automatically abort one transaction. Prevented by always acquiring locks in the same order.',also:['Lock','Transaction','MVCC']},
+  {term:'Lock',cat:'core',def:'A mechanism to control concurrent access to data. Row-level locks (most granular), table-level locks (coarser). Shared locks allow concurrent reads. Exclusive locks block all others. PostgreSQL uses advisory locks for application-level coordination.',also:['Deadlock','MVCC','Transaction']},
+  {term:'Normalization',cat:'core',def:'The process of organizing a database schema to reduce data redundancy and improve data integrity. 1NF: atomic values. 2NF: no partial dependencies. 3NF: no transitive dependencies. BCNF: stricter 3NF. Denormalization sacrifices this for read performance.',also:['Schema','Foreign Key','Index']},
+  {term:'Schema',cat:'core',def:'The structure/blueprint of a database — defines tables, columns, data types, constraints, indexes, and relationships. In PostgreSQL, a schema is also a namespace within a database (public, private). "Schema-on-read" (NoSQL) vs "schema-on-write" (SQL).',also:['Normalization','Migration','DDL']},
+  {term:'DDL',cat:'core',def:'Data Definition Language — SQL statements that define structure: CREATE, ALTER, DROP, TRUNCATE. DDL statements are auto-committed in most databases (except PostgreSQL which wraps them in transactions). Changes are immediate and hard to roll back.',also:['DML','Schema','Migration']},
+  {term:'DML',cat:'core',def:'Data Manipulation Language — SQL statements that manipulate data: SELECT, INSERT, UPDATE, DELETE. DML runs within transactions and can be rolled back. SELECT is technically DQL (Data Query Language) but commonly grouped with DML.',also:['DDL','Transaction','CRUD']},
+  {term:'CRUD',cat:'core',def:'Create, Read, Update, Delete — the four basic operations of persistent storage. Maps to SQL INSERT, SELECT, UPDATE, DELETE. Also maps to HTTP POST, GET, PUT/PATCH, DELETE in REST APIs.',also:['DML','API','SQL']},
+  {term:'Foreign Key',cat:'core',def:'A constraint that enforces referential integrity — a column\'s value must match a value in another table\'s primary key. Prevents orphaned records. ON DELETE CASCADE automatically deletes related rows. Performance cost: FK checks on every write.',also:['Primary Key','Join','Constraint']},
+  {term:'Primary Key',cat:'core',def:'A column (or set of columns) that uniquely identifies each row. Cannot be NULL or duplicate. Automatically creates a unique index. Single column (surrogate key like BIGSERIAL/UUID) or composite (natural key from business data).',also:['Foreign Key','Index','UUID']},
+  {term:'Constraint',cat:'core',def:'A rule enforced by the database engine: PRIMARY KEY (unique, not null), UNIQUE, NOT NULL, CHECK (custom condition), FOREIGN KEY (referential integrity), EXCLUSION (PostgreSQL — no overlapping ranges). Constraints are validated on every write.',also:['Primary Key','Foreign Key','Normalization']},
+
+  // Storage & I/O
+  {term:'WAL',cat:'storage',def:'Write-Ahead Log — every change is written to the WAL before being applied to data files. This ensures durability (crash recovery) and enables streaming replication. PostgreSQL WAL files live in pg_wal/. MySQL equivalent is binary log (binlog).',also:['Checkpoint','Replication','PITR']},
+  {term:'Checkpoint',cat:'storage',def:'The process of writing all dirty pages from shared_buffers to disk, creating a consistent on-disk state. PostgreSQL checkpoints happen every checkpoint_timeout seconds or when max_wal_size is reached. Frequent checkpoints cause I/O spikes.',also:['WAL','Shared Buffers','VACUUM']},
+  {term:'Shared Buffers',cat:'storage',def:'PostgreSQL\'s in-memory page cache — the primary buffer pool where hot data pages live. Set to 25% of RAM. A cache hit means data is served from memory; a cache miss requires a disk read. Target cache hit ratio > 99%.',also:['Checkpoint','Buffer Pool','Cache Hit Rate']},
+  {term:'Buffer Pool',cat:'storage',def:'MySQL InnoDB\'s equivalent of PostgreSQL\'s shared_buffers. Caches table and index data. Set innodb_buffer_pool_size to 70-80% of RAM. The most important MySQL performance tuning parameter.',also:['Shared Buffers','Cache Hit Rate','InnoDB']},
+  {term:'InnoDB',cat:'storage',def:'MySQL\'s default storage engine since 5.5. Provides ACID transactions, row-level locking, MVCC, foreign keys, and crash recovery. Each table stored as .ibd file with innodb_file_per_table. The only engine you should use in production MySQL.',also:['Buffer Pool','MVCC','MyISAM']},
+  {term:'SSTable',cat:'storage',def:'Sorted String Table — an immutable, sorted file of key-value pairs used by LSM-tree databases (Cassandra, RocksDB, LevelDB). SSTables are written sequentially (fast writes), periodically merged via compaction, and read with bloom filters to avoid unnecessary reads.',also:['LSM Tree','Compaction','Bloom Filter']},
+  {term:'LSM Tree',cat:'storage',def:'Log-Structured Merge Tree — a write-optimized data structure used by Cassandra, RocksDB, ClickHouse. Writes go to memory (memtable) then flush to immutable SSTables. Read requires checking multiple SSTables. Read amplification vs write amplification tradeoff.',also:['SSTable','Compaction','Memtable']},
+  {term:'B-tree Index',cat:'storage',def:'The default index type in PostgreSQL and MySQL. A self-balancing tree where each node has multiple children, keeping data sorted. Supports equality (=), range (<, >, BETWEEN), prefix LIKE, and ORDER BY efficiently. Most indexes should be B-trees.',also:['Index','GIN Index','Hash Index']},
+  {term:'GIN Index',cat:'storage',def:'Generalized Inverted Index — PostgreSQL index type for composite values: JSONB, arrays, full-text search (tsvector), and extensions like pg_trgm. Maps each element to a list of rows containing it. Faster reads than GiST, slower to build.',also:['B-tree Index','JSONB','Full-Text Search']},
+  {term:'VACUUM',cat:'storage',def:'PostgreSQL process that reclaims storage occupied by dead row versions (from MVCC updates/deletes). autovacuum runs automatically. VACUUM ANALYZE also updates query planner statistics. VACUUM FULL rewrites the table but takes an exclusive lock.',also:['MVCC','Bloat','autovacuum']},
+  {term:'Bloat',cat:'storage',def:'Wasted space in PostgreSQL tables and indexes from dead tuples not yet reclaimed by VACUUM. High bloat causes table scans to read many useless rows. Caused by high UPDATE/DELETE rates without sufficient vacuuming.',also:['VACUUM','Dead Tuple','MVCC']},
+  {term:'Compaction',cat:'storage',def:'Background process in LSM-tree databases (Cassandra, ClickHouse, RocksDB) that merges SSTables to reclaim space, remove tombstones, and improve read performance. Multiple strategies: STCS (size-tiered), LCS (leveled), TWCS (time-window for time-series).',also:['SSTable','LSM Tree','Tombstone']},
+  {term:'Tombstone',cat:'storage',def:'A marker left when a record is deleted in a distributed database (Cassandra) or LSM-tree store. The actual data is not immediately removed — tombstones are cleaned up during compaction after gc_grace_seconds. Excessive tombstones slow reads.',also:['Compaction','Cassandra','SSTable']},
+  {term:'Bloom Filter',cat:'storage',def:'A probabilistic data structure that can definitively say "this key is NOT in this SSTable" — eliminating unnecessary disk reads. May return false positives (says key is present when it\'s not) but never false negatives. Used by Cassandra, RocksDB, ClickHouse.',also:['SSTable','LSM Tree','Cassandra']},
+
+  // Replication & HA
+  {term:'Replication',cat:'replication',def:'Copying data from one database server (primary) to one or more servers (replicas/standbys). Provides high availability (automatic failover if primary fails) and read scaling (distribute read queries to replicas). Two modes: synchronous (waits for replica ack) or asynchronous.',also:['WAL','Failover','Read Replica']},
+  {term:'Streaming Replication',cat:'replication',def:'PostgreSQL\'s native replication where WAL records are streamed from primary to standby in real time. The standby applies WAL records and stays in sync. Standbys can serve read queries (hot standby mode). Lag measured by LSN difference.',also:['WAL','Hot Standby','Replication Slot']},
+  {term:'Logical Replication',cat:'replication',def:'Replicates individual data changes (row-level) rather than WAL byte streams. Allows replication between different PostgreSQL versions, selective table replication, and replications to other systems. Used by pglogical, AWS DMS, Debezium.',also:['Streaming Replication','WAL','CDC']},
+  {term:'Replication Slot',cat:'replication',def:'PostgreSQL mechanism that ensures the primary keeps WAL segments until the replica has consumed them. Prevents replicas from falling too far behind and losing data. Risk: if a slot goes unused, WAL accumulates and can fill disk. Monitor slot lag!',also:['Streaming Replication','WAL','Lag']},
+  {term:'Failover',cat:'replication',def:'The process of promoting a replica to primary when the primary fails. Automatic failover requires a HA manager like Patroni (PostgreSQL), MHA (MySQL), or Sentinel (Redis). Recovery Point Objective (RPO) and Recovery Time Objective (RTO) measure quality of failover.',also:['Replication','Patroni','Split Brain']},
+  {term:'Split Brain',cat:'replication',def:'A dangerous scenario in distributed databases where two nodes both believe they are the primary and accept writes simultaneously. Causes data divergence that\'s hard to reconcile. Prevented by quorum-based leader election (Raft, Paxos) and STONITH (Shoot The Other Node In The Head).',also:['Failover','Quorum','Raft']},
+  {term:'Quorum',cat:'replication',def:'The minimum number of nodes that must agree for an operation to succeed in a distributed system. For RF=3, quorum = 2 (majority). Used by Cassandra (QUORUM consistency), Raft consensus, etcd. Quorum prevents split-brain and ensures consistency.',also:['Raft','Split Brain','Consensus']},
+  {term:'Raft',cat:'replication',def:'A consensus algorithm for distributed systems that ensures a cluster of nodes agrees on a sequence of values. Used by CockroachDB, etcd, TiDB, CockroachDB. Elects a leader, replicates log entries, only commits when majority acknowledges. Easier to understand than Paxos.',also:['Quorum','Leader Election','etcd']},
+  {term:'Patroni',cat:'replication',def:'A high-availability solution for PostgreSQL that manages automatic failover using etcd, Consul, or ZooKeeper as a distributed configuration store (DCS). Patroni monitors health, promotes the best replica when primary fails, and fences the old primary.',also:['Failover','Replication','etcd']},
+  {term:'CDC',cat:'replication',def:'Change Data Capture — capturing every INSERT, UPDATE, DELETE as a stream of events. Used for real-time sync to data warehouses, search indexes, caches. Tools: Debezium (Kafka), AWS DMS, PostgreSQL logical replication. Based on WAL (PostgreSQL) or binlog (MySQL).',also:['Logical Replication','WAL','Debezium']},
+  {term:'PITR',cat:'replication',def:'Point-in-Time Recovery — restoring a database to a specific moment in time by replaying WAL/binlog from a base backup. Essential for recovering from data corruption, accidental deletes. Requires continuous WAL archiving. Tools: pgBackRest, Barman (PostgreSQL).',also:['WAL','Backup','pgBackRest']},
+  {term:'Galera Cluster',cat:'replication',def:'Synchronous multi-master replication for MySQL/MariaDB. Every node accepts writes and every write is committed on ALL nodes before returning success. Uses wsrep (write set replication) API. Provides true multi-master with no replication lag.',also:['Replication','MariaDB','MySQL']},
+
+  // Performance
+  {term:'Query Plan',cat:'performance',def:'The execution strategy chosen by the query planner/optimizer. Shows which indexes are used, join order, join algorithms (Hash Join, Nested Loop, Merge Join), and estimated vs actual row counts. View with EXPLAIN ANALYZE in PostgreSQL/MySQL.',also:['EXPLAIN','Index','Query Planner']},
+  {term:'EXPLAIN',cat:'performance',def:'SQL command that shows the query execution plan without running the query. EXPLAIN ANALYZE actually runs the query and shows real timing. EXPLAIN (ANALYZE, BUFFERS) also shows cache hits/misses. Essential for query optimization.',also:['Query Plan','Index','Sequential Scan']},
+  {term:'Sequential Scan',cat:'performance',def:'Reading every row in a table from disk. Unavoidable for full-table operations or when no useful index exists. Expected for small tables (<1000 rows) where a scan is faster than index lookup. For large tables: add a WHERE clause index.',also:['Index Scan','Query Plan','EXPLAIN']},
+  {term:'Index Scan',cat:'performance',def:'Using an index to find matching rows rather than scanning all rows. Much faster than sequential scan for selective queries. Requires a WHERE clause that matches the index definition. Index-Only Scan is even faster — reads data from index without visiting the table.',also:['Sequential Scan','B-tree Index','Query Plan']},
+  {term:'Connection Pooling',cat:'performance',def:'Reusing database connections rather than creating a new one per request. Opening a PostgreSQL connection takes ~50ms and consumes ~5MB RAM. Poolers (PgBouncer, ProxySQL, RDS Proxy) maintain a pool of connections and multiplex application requests.',also:['PgBouncer','max_connections','N+1 Problem']},
+  {term:'PgBouncer',cat:'performance',def:'Lightweight PostgreSQL connection pooler. Transaction mode: connection returned to pool after each transaction (highest multiplexing). Session mode: connection held for entire session. Statement mode: after each statement (most aggressive, limited compatibility).',also:['Connection Pooling','max_connections','PostgreSQL']},
+  {term:'N+1 Problem',cat:'performance',def:'A common ORM performance issue where fetching N records then loading related data for each one results in N+1 queries instead of 1. Solved by eager loading (JOIN, IN clause) or GraphQL DataLoader batching. EXPLAIN shows many identical queries in slow query log.',also:['Query Plan','JOIN','ORM']},
+  {term:'Cache Hit Rate',cat:'performance',def:'Percentage of data reads served from memory (buffer pool / shared_buffers) without disk I/O. Target > 99%. Below 95% means your buffer pool is too small or working set is too large. Monitor: PostgreSQL — pg_statio_user_tables; MySQL — Innodb_buffer_pool_reads.',also:['Shared Buffers','Buffer Pool','I/O']},
+  {term:'Slow Query Log',cat:'performance',def:'Database feature that logs queries exceeding a time threshold. PostgreSQL: log_min_duration_statement. MySQL: slow_query_log + long_query_time. Analyze with pg_stat_statements (PostgreSQL) or pt-query-digest (MySQL Percona Toolkit).',also:['Query Plan','EXPLAIN','pg_stat_statements']},
+  {term:'Cardinality',cat:'performance',def:'The number of unique values in a column. High cardinality (e.g., user_id): B-tree index very effective. Low cardinality (e.g., status: active/inactive): B-tree index often skipped by planner, partial indexes or bitmap scans work better.',also:['Index','Query Plan','Statistics']},
+  {term:'Statistics',cat:'performance',def:'Data the query planner uses to estimate row counts and choose execution plans. Collected by ANALYZE. Stored in pg_statistic. Stale statistics cause bad plans. Increase default_statistics_target for complex columns. autovacuum runs ANALYZE automatically.',also:['Query Plan','ANALYZE','Cardinality']},
+  {term:'Partitioning',cat:'performance',def:'Splitting a large table into smaller physical pieces (partitions) by a key (range, list, hash). Queries that filter on the partition key skip irrelevant partitions (partition pruning). PostgreSQL declarative partitioning, MySQL PARTITION clause, TimescaleDB hypertables.',also:['Sharding','Index','TimescaleDB']},
+
+  // K8s & Cloud
+  {term:'StatefulSet',cat:'k8s',def:'Kubernetes workload controller for stateful applications (databases). Unlike Deployments, StatefulSets provide: stable network identity (pod-0, pod-1), stable persistent storage (PVCs follow pods), ordered startup/shutdown. Required for databases on K8s.',also:['PVC','Operator','Deployment']},
+  {term:'PVC',cat:'k8s',def:'PersistentVolumeClaim — a request for storage in Kubernetes. Databases need PVCs to survive pod restarts. StorageClass defines the storage type (SSD, HDD, NFS). RWO (ReadWriteOnce) for databases — one pod mounts the volume at a time.',also:['StatefulSet','StorageClass','Operator']},
+  {term:'Operator',cat:'k8s',def:'A Kubernetes controller that automates the lifecycle of complex stateful applications. Encodes operational knowledge (deployment, scaling, failover, backup, upgrades) as code. Database operators: CloudNativePG, K8ssandra, MongoDB Community Operator, ECK.',also:['StatefulSet','CRD','CloudNativePG']},
+  {term:'CRD',cat:'k8s',def:'Custom Resource Definition — extends the Kubernetes API with application-specific resource types. Database operators define CRDs like PostgreSQLCluster, MongoDBReplicaSet. You interact with these via kubectl just like built-in resources.',also:['Operator','StatefulSet','Kubernetes']},
+  {term:'CloudNativePG',cat:'k8s',def:'The CNCF-listed Kubernetes operator for PostgreSQL. Manages cluster topology, automatic failover, WAL archiving, connection pooling (PgBouncer sidecar), rolling updates, and monitoring. Configured via PostgreSQL CRD. The recommended way to run PostgreSQL on K8s.',also:['Operator','PostgreSQL','StatefulSet']},
+  {term:'StorageClass',cat:'k8s',def:'Defines the type and parameters of storage provisioned for PVCs in Kubernetes. Parameters: provisioner (AWS EBS, GCE PD, Azure Disk), type (gp3, pd-ssd), reclaim policy (Delete, Retain). Databases always need SSD storage classes — never use default HDD.',also:['PVC','StatefulSet','Operator']},
+  {term:'Managed Database',cat:'k8s',def:'A cloud-provided database service where the provider handles installation, patching, backups, failover, and scaling. Examples: AWS RDS/Aurora, Azure Database, Google Cloud SQL. Tradeoff: less control, higher cost, simpler operations.',also:['RDS','Aurora','Cloud SQL']},
+  {term:'Connection String',cat:'k8s',def:'A URL or DSN (Data Source Name) containing all parameters to connect to a database: host, port, database name, user, password, SSL mode. Format varies: PostgreSQL uses URI (postgresql://user:pass@host:5432/db), MySQL uses host=... syntax.',also:['Managed Database','PgBouncer','SSL']},
+  {term:'Sidecar',cat:'k8s',def:'A secondary container in a Kubernetes pod that assists the main container. Common database patterns: PgBouncer sidecar for connection pooling, exporter sidecar for Prometheus metrics, backup agent sidecar for backup coordination.',also:['Operator','StatefulSet','Prometheus']},
+
+  // NoSQL
+  {term:'Sharding',cat:'nosql',def:'Horizontal partitioning of data across multiple nodes (shards). Each shard holds a subset of data determined by the shard key. Enables linear scaling of storage and throughput. MongoDB sharding, Cassandra consistent hashing, DynamoDB automatic sharding.',also:['Partitioning','Shard Key','Consistent Hashing']},
+  {term:'Shard Key',cat:'nosql',def:'The field(s) used to determine which shard stores a document/row. Critical design decision — cannot change without resharding. Bad shard key causes hotspots (all writes to one shard). Good shard key: high cardinality, uniform distribution, aligned with query patterns.',also:['Sharding','Consistent Hashing','MongoDB']},
+  {term:'Consistent Hashing',cat:'nosql',def:'A distributed hashing scheme where adding/removing nodes redistributes only a minimal fraction of data. Used by Cassandra, DynamoDB. Data is assigned to nodes by hashing the key onto a ring. Each node is responsible for a range of the ring.',also:['Sharding','Cassandra','DynamoDB']},
+  {term:'Eventual Consistency',cat:'nosql',def:'A consistency model where, given no new updates, all replicas will eventually converge to the same value. Reads may see stale data temporarily after a write. Used by Cassandra (ONE/LOCAL_ONE), DynamoDB (eventually consistent reads), DNS.',also:['BASE','ACID','Strong Consistency']},
+  {term:'Strong Consistency',cat:'nosql',def:'Every read sees the most recently written value. Requires coordination between nodes (quorum, synchronous replication). Provided by: PostgreSQL, CockroachDB, Google Spanner, etcd. Higher latency than eventual consistency.',also:['Eventual Consistency','Quorum','Linearizability']},
+  {term:'Document Model',cat:'nosql',def:'Stores data as JSON/BSON documents. Each document is self-contained with nested objects and arrays. No fixed schema — each document can have different fields. Used by MongoDB, Firestore, CouchDB. Best for hierarchical data without complex cross-document queries.',also:['MongoDB','JSONB','Schema']},
+  {term:'Wide Column',cat:'nosql',def:'Data model where rows have a variable number of columns organized into column families. Rows share a row key but can have different columns. Used by Cassandra, HBase (based on Google Bigtable). Optimized for high write throughput and time-series data.',also:['Cassandra','HBase','Column Family']},
+  {term:'Graph Database',cat:'nosql',def:'Stores data as nodes (entities) and edges (relationships). Native graph storage traverses relationships in O(1) per hop regardless of total graph size. SQL requires O(n) JOINs for the same. Used for social networks, fraud detection, recommendations.',also:['Neo4j','Cypher','Property Graph']},
+  {term:'Vector Database',cat:'nosql',def:'Stores and queries high-dimensional vector embeddings (from ML models like OpenAI, Cohere). Uses ANN (Approximate Nearest Neighbor) algorithms like HNSW or IVFFlat for similarity search. Used for semantic search, RAG, recommendations. Examples: pgvector, Pinecone, Weaviate, Qdrant.',also:['pgvector','HNSW','Embedding']},
+  {term:'HNSW',cat:'nosql',def:'Hierarchical Navigable Small World — an ANN (Approximate Nearest Neighbor) index algorithm for vector search. Builds a multi-layer graph where upper layers provide coarse navigation and lower layers provide fine-grained search. Used by pgvector, OpenSearch, Weaviate.',also:['Vector Database','pgvector','Embedding']},
+  {term:'Embedding',cat:'nosql',def:'A numerical vector representation of data (text, image, audio) produced by an ML model. Semantically similar items have vectors that are close in high-dimensional space. Stored in vector databases for similarity search. OpenAI text-embedding-3-small produces 1536-dimensional vectors.',also:['Vector Database','HNSW','pgvector']},
+];
+
+let glosActiveCategory = 'all';
+let glosSearchQuery = '';
+
+function renderGlossary(){
+  const grid = document.getElementById('glos-grid');
+  if(!grid) return;
+  const filtered = glossaryTerms.filter(t => {
+    const catOk = glosActiveCategory === 'all' || t.cat === glosActiveCategory;
+    const searchOk = !glosSearchQuery ||
+      t.term.toLowerCase().includes(glosSearchQuery) ||
+      t.def.toLowerCase().includes(glosSearchQuery);
+    return catOk && searchOk;
+  });
+  if(!filtered.length){
+    grid.innerHTML = '<div style="color:var(--text3);font-size:.88rem;padding:2rem;grid-column:1/-1">No terms found. Try a different search.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(t => `
+    <div class="glos-card">
+      <div class="glos-card-header">
+        <div class="glos-term">${t.term}</div>
+        <div class="glos-cat">${({core:'Core',storage:'Storage',replication:'Replication',performance:'Performance',k8s:'K8s/Cloud',nosql:'NoSQL'})[t.cat]||t.cat}</div>
+      </div>
+      <div class="glos-def">${t.def}</div>
+      ${t.also ? `<div class="glos-also">See also: ${t.also.map(a=>`<span onclick="searchGlosTerm('${a}')">${a}</span>`).join(', ')}</div>` : ''}
+    </div>`).join('');
+}
+
+function filterGlossary(val){
+  glosSearchQuery = val.toLowerCase();
+  renderGlossary();
+}
+
+function glosCategory(btn, cat){
+  glosActiveCategory = cat;
+  document.querySelectorAll('.glos-filter-row .filter-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGlossary();
+}
+
+function searchGlosTerm(term){
+  document.getElementById('glos-search').value = term;
+  glosSearchQuery = term.toLowerCase();
+  glosActiveCategory = 'all';
+  document.querySelectorAll('.glos-filter-row .filter-tag').forEach(b => b.classList.remove('active'));
+  document.querySelector('.glos-filter-row .filter-tag').classList.add('active');
+  renderGlossary();
+  document.getElementById('glossary').scrollIntoView({behavior:'smooth'});
+}
+
+renderGlossary();
+
+
+// ============================================================
+// QUIZ
+// ============================================================
+const allQuizQuestions = [
+  // SQL & Relational
+  {q:'Which PostgreSQL isolation level prevents ALL anomalies including phantom reads and write skew?',opts:['Read Committed','Repeatable Read','Serializable','Read Uncommitted'],ans:2,cat:'sql',exp:'Serializable is the strictest isolation level. It prevents dirty reads, non-repeatable reads, phantom reads, AND write skew. PostgreSQL implements it using Serializable Snapshot Isolation (SSI). CockroachDB uses serializable by default.'},
+  {q:'What does MVCC stand for and what problem does it solve?',opts:['Multi-Value Concurrency Control — handles multiple values per key','Multi-Version Concurrency Control — allows reads without blocking writes','Multiple Version Cache Control — speeds up repeated queries','Managed Version Consistency Check — validates data integrity'],ans:1,cat:'sql',exp:'MVCC (Multi-Version Concurrency Control) keeps multiple versions of rows simultaneously. Readers see a consistent snapshot of the data without blocking or being blocked by writers. This is how PostgreSQL and MySQL InnoDB achieve high concurrency.'},
+  {q:'In PostgreSQL, what does VACUUM do?',opts:['Backs up the database to disk','Removes dead row versions left by MVCC and reclaims storage','Optimizes index structures','Compresses table data for faster reads'],ans:1,cat:'sql',exp:'VACUUM reclaims storage occupied by dead tuples — old row versions left behind by UPDATE and DELETE operations in MVCC. Without regular vacuuming, tables grow bloated. autovacuum runs automatically. VACUUM ANALYZE also updates query planner statistics.'},
+  {q:'What is the difference between HAVING and WHERE?',opts:['WHERE filters before grouping; HAVING filters after grouping','HAVING is faster than WHERE','WHERE only works with JOINs; HAVING works with subqueries','There is no difference — they are interchangeable'],ans:0,cat:'sql',exp:'WHERE filters rows BEFORE GROUP BY runs — it can use indexes and is very efficient. HAVING filters AFTER GROUP BY — it operates on aggregated results. Rule: use WHERE for row-level filters, HAVING only for conditions on aggregates like COUNT() or SUM().'},
+  {q:'Which index type in PostgreSQL is best for querying JSONB fields?',opts:['B-tree','Hash','GIN','BRIN'],ans:2,cat:'sql',exp:'GIN (Generalized Inverted Index) is designed for composite types like JSONB, arrays, and full-text search. It creates an index entry for each key/value in a JSONB document, enabling fast containment (@>) and existence (?) queries. B-tree indexes cannot index inside JSONB.'},
+  {q:'What does CREATE INDEX CONCURRENTLY do differently from CREATE INDEX?',opts:['It creates the index faster using parallel workers','It creates the index without locking the table for writes','It creates a partial index','It creates a temporary index that is auto-dropped'],ans:1,cat:'sql',exp:'CREATE INDEX CONCURRENTLY builds the index without taking a write lock on the table — other DML operations can continue during the build. It takes longer (multiple passes over the table) but is safe for production. Plain CREATE INDEX takes an exclusive lock, blocking all writes.'},
+  {q:'In a composite index on (user_id, created_at, status), which query can use this index?',opts:['WHERE created_at > NOW() - INTERVAL 7 DAY','WHERE status = \'active\'','WHERE user_id = 1 AND created_at > NOW() - INTERVAL 7 DAY','WHERE status = \'active\' AND created_at > NOW()'],ans:2,cat:'sql',exp:'Composite indexes work from left to right. A query must include the leftmost column(s) to use the index. WHERE user_id = 1 AND created_at > ... uses the first two columns. Queries starting with created_at or status alone cannot use this index effectively.'},
+  {q:'What is the N+1 query problem?',opts:['Using LIMIT without ORDER BY returns N+1 rows unexpectedly','Loading N records then executing 1 additional query per record instead of joining','Having N+1 indexes on a table causing slow writes','A connection pool running out of connections under N users'],ans:1,cat:'sql',exp:'N+1 occurs when an application fetches a list of N records, then executes 1 separate query for each to load related data — resulting in N+1 total queries. Fix: use JOINs, IN clauses, or ORM eager loading to load all data in 1-2 queries.'},
+
+  // NoSQL
+  {q:'What is the CAP theorem?',opts:['A distributed system can achieve Consistency, Availability, and Partition tolerance simultaneously','A distributed system can only guarantee 2 of: Consistency, Availability, Partition tolerance','All distributed databases must choose between ACID and BASE','Cassandra, AWS, and PostgreSQL are the three major database paradigms'],ans:1,cat:'nosql',exp:'The CAP theorem (Brewer, 2000) states that a distributed system can only guarantee 2 of 3 properties during a network partition. CP systems (HBase, etcd) sacrifice availability. AP systems (Cassandra, DynamoDB) sacrifice consistency. CA is only possible without partitions (single-node PostgreSQL).'},
+  {q:'In MongoDB, what is the difference between embedded documents and references?',opts:['Embedded documents are faster to insert; references are faster to query','Embedded: store related data inside the document (read together). References: link to another collection (updated independently)','References are MongoDB\'s equivalent of SQL JOINs and always preferred','Embedded documents are deprecated in MongoDB 7.0'],ans:1,cat:'nosql',exp:'Embed data that is always read together (e.g., order items in an order document). Use references when data is updated independently or shared across documents. Embedding reduces reads but increases document size. References require $lookup (aggregation JOIN) to read together.'},
+  {q:'What is a shard key in a distributed database?',opts:['The encryption key used to secure shard data','The field(s) used to determine which shard stores a row/document','A special index that spans multiple shards','The primary key of the first table created in a sharded database'],ans:1,cat:'nosql',exp:'The shard key determines data distribution across shards. Choosing a good shard key is critical: it must have high cardinality, uniform distribution, and align with query patterns. A bad shard key (like a boolean field) causes hotspots where one shard handles all writes.'},
+  {q:'What consistency level in Cassandra provides the best balance of consistency and availability?',opts:['ONE','ALL','QUORUM','LOCAL_ONE'],ans:2,cat:'nosql',exp:'QUORUM requires a majority (RF/2 + 1) of nodes to respond. For RF=3, that\'s 2 nodes. This tolerates 1 node failure while maintaining consistency. LOCAL_QUORUM does the same but only within the local data center — ideal for multi-DC deployments to avoid cross-DC latency.'},
+  {q:'What is eventual consistency?',opts:['Data is eventually deleted if not accessed','All replicas will converge to the same value given no new updates','Consistency checks run eventually in the background','Database transactions are eventually committed'],ans:1,cat:'nosql',exp:'Eventual consistency means replicas may temporarily serve stale data after a write, but will converge to the same value if no new updates occur. Used by Cassandra (ONE consistency), DynamoDB (eventually consistent reads), and DNS. Faster than strong consistency but requires applications to tolerate stale reads.'},
+  {q:'In Redis, which data structure would you use for a real-time leaderboard?',opts:['String — with INCR for scores','Hash — with user IDs as fields','Sorted Set — with score as the sort value','List — maintaining insertion order'],ans:2,cat:'nosql',exp:'Sorted Sets (ZADD, ZREVRANGE, ZREVRANK, ZINCRBY) are perfect for leaderboards. Members are sorted by their score with O(log N) add/update. ZREVRANGE gets the top-N players with scores. ZREVRANK gets a player\'s rank. ZINCRBY atomically updates scores.'},
+  {q:'What does DynamoDB\'s Single Table Design achieve?',opts:['Stores only one type of entity per table for simplicity','Stores all entity types in one table using PK/SK prefixes to enable all access patterns efficiently','Limits tables to 1GB for performance','Ensures only one write happens at a time per table'],ans:1,cat:'nosql',exp:'Single Table Design stores all entity types (users, orders, products) in one DynamoDB table, using partition key (PK) and sort key (SK) prefixes to separate them (USER#u1, ORDER#o1). This enables efficient access patterns like "get user + all their orders" in a single query.'},
+
+  // Performance
+  {q:'What does EXPLAIN ANALYZE do differently from EXPLAIN?',opts:['EXPLAIN ANALYZE checks for syntax errors before running','EXPLAIN ANALYZE actually executes the query and shows real row counts and timings','EXPLAIN ANALYZE shows the index creation command','EXPLAIN ANALYZE runs the query in a sandbox without modifying data'],ans:1,cat:'perf',exp:'EXPLAIN shows the planner\'s estimated query plan without executing the query. EXPLAIN ANALYZE actually runs the query and shows real timings, actual row counts vs estimated, and buffer usage (with BUFFERS option). Discrepancies between estimated and actual rows indicate stale statistics — run ANALYZE.'},
+  {q:'A PostgreSQL table has a B-tree index on (status, created_at). Which query CANNOT use this index efficiently?',opts:['WHERE status = \'active\' AND created_at > NOW() - INTERVAL 7 DAY','WHERE status = \'active\'','WHERE created_at > NOW() - INTERVAL 7 DAY','WHERE status IN (\'active\', \'pending\')'],ans:2,cat:'perf',exp:'Composite B-tree indexes work left-to-right. You must include the leftmost column (status) for the index to be used. WHERE created_at > ... alone skips the first column and forces a sequential scan or separate index. Solution: create a separate index on just created_at.'},
+  {q:'What is connection pooling and why is it needed?',opts:['Grouping multiple queries into a single network packet','Reusing existing database connections to avoid the overhead of creating new ones','Caching query results for repeated identical queries','Distributing connections across multiple database replicas'],ans:1,cat:'perf',exp:'Opening a PostgreSQL connection takes ~50ms and ~5MB RAM. Web applications create hundreds of requests/sec — without pooling, this creates hundreds of connections constantly. PgBouncer maintains a pool of connections to PostgreSQL and multiplexes application requests, dramatically reducing overhead.'},
+  {q:'What does "cache hit ratio" measure in a database?',opts:['Percentage of queries that used an index vs a sequential scan','Percentage of queries returned from query result cache','Percentage of data reads served from memory vs disk','Percentage of connections accepted vs rejected'],ans:2,cat:'perf',exp:'Cache hit ratio measures how often data is found in the buffer pool (memory) vs requiring a disk read. Target > 99%. Below 95% means your buffer pool (shared_buffers / innodb_buffer_pool_size) is too small for your working set. Each disk read is 100-1000x slower than a memory read.'},
+  {q:'Which PostgreSQL feature would you use to track and analyze slow queries in production?',opts:['pg_stat_bgwriter','pg_stat_statements','pg_hba.conf','autovacuum'],ans:1,cat:'perf',exp:'pg_stat_statements extension tracks all executed queries with their execution count, total time, mean time, rows affected, and more. Enable with CREATE EXTENSION pg_stat_statements. Then query it to find your slowest queries by mean execution time. Essential for production query optimization.'},
+
+  // K8s & Operators
+  {q:'Why must databases use StatefulSets rather than Deployments in Kubernetes?',opts:['StatefulSets are faster to deploy','StatefulSets provide stable network identity and persistent storage that survives pod restarts','Deployments don\'t support multiple replicas','StatefulSets have higher resource limits'],ans:1,cat:'k8s',exp:'Deployments create pods with random names and no storage persistence — pods can be replaced anywhere. StatefulSets provide: stable pod names (pod-0, pod-1), stable DNS hostnames, and PVCs that follow pods across restarts. Databases require stable identity for replication and stable storage for data.'},
+  {q:'What is the CloudNativePG operator used for?',opts:['Running ClickHouse on Kubernetes','Running PostgreSQL on Kubernetes with automatic HA, failover, and WAL backup','Monitoring all databases in a Kubernetes cluster','Managing Kubernetes secrets for database credentials'],ans:1,cat:'k8s',exp:'CloudNativePG (CNPG) is the CNCF-listed Kubernetes operator for PostgreSQL. It manages the full PostgreSQL lifecycle: cluster creation, primary/replica topology, automatic failover, WAL archiving to S3/GCS/Azure, connection pooling via PgBouncer sidecar, rolling updates, and Prometheus monitoring.'},
+  {q:'What does a Kubernetes operator do?',opts:['Provides an admin UI for managing Kubernetes clusters','Automates application lifecycle using custom controllers and CRDs','Manages Kubernetes node security and access control','Schedules pods to appropriate nodes based on resource requirements'],ans:1,cat:'k8s',exp:'A Kubernetes operator extends the K8s API with CRDs (Custom Resource Definitions) and runs a controller that watches these resources. When you create a PostgreSQLCluster CRD, the operator\'s controller responds by creating StatefulSets, Services, ConfigMaps, and PVCs — encoding expert operational knowledge as code.'},
+  {q:'In Kubernetes, what storage class setting is recommended for production databases?',opts:['Standard HDD storage for cost savings','NFS shared storage for easy data access','SSD-backed storage (gp3, pd-ssd, Premium SSD) with ReadWriteOnce access','Memory-backed tmpfs storage for maximum speed'],ans:2,cat:'k8s',exp:'Databases require low-latency, high-IOPS storage. Always use SSD-backed StorageClasses. ReadWriteOnce (RWO) means one pod mounts the volume at a time — correct for databases. NFS and shared storage have too much latency. tmpfs is not persistent. Never use default HDD storage for database PVCs.'},
+  {q:'What is the purpose of PodDisruptionBudget (PDB) for databases?',opts:['Limits CPU and memory usage of database pods','Ensures at least N database pods remain running during voluntary disruptions (node drains)','Automatically scales database pods based on query load','Prevents unauthorized access to database pods'],ans:1,cat:'k8s',exp:'A PodDisruptionBudget defines how many pods can be unavailable during voluntary disruptions (node drain, cluster upgrade). For a 3-node database cluster, PDB maxUnavailable=1 ensures at least 2 nodes stay running. Without PDB, a node drain could take down all database pods simultaneously.'},
+
+  // Replication & HA
+  {q:'What is the difference between synchronous and asynchronous replication?',opts:['Synchronous is faster; asynchronous is more reliable','Synchronous: primary waits for replica to confirm write before returning success. Asynchronous: primary returns success immediately, replica catches up later','Synchronous replication uses WAL; asynchronous uses triggers','Asynchronous replication is only available in enterprise database versions'],ans:1,cat:'replication',exp:'Synchronous replication: zero data loss (RPO=0) but higher write latency (waiting for replica ACK). Asynchronous: lower write latency but risk of data loss if primary fails before replica catches up. Most production setups use async with at least one sync standby for the failover target.'},
+  {q:'What is replication lag?',opts:['The delay before replication is enabled after setup','The difference between the primary\'s current state and the replica\'s state','The time taken to configure a new replica','The maximum allowed transaction size on a replica'],ans:1,cat:'replication',exp:'Replication lag is how far behind a replica is from the primary. Measured as bytes (LSN difference in PostgreSQL) or seconds (time since last replicated transaction). High lag means reads from the replica are stale. Causes: slow network, slow replica disk, large transactions, replica CPU/IO saturation.'},
+  {q:'What is split-brain in database replication?',opts:['When a database query plan splits into two execution paths','When two nodes simultaneously believe they are the primary and accept writes','When a table is split across two shards with different data','When a backup splits into incremental and full portions'],ans:1,cat:'replication',exp:'Split-brain occurs when a network partition causes two nodes to both believe they\'re the primary and accept writes. This results in diverged data that\'s difficult to reconcile. Prevented by quorum-based leader election (requires majority to elect a primary) and STONITH (fencing the old primary).'},
+  {q:'What does Patroni do for PostgreSQL?',opts:['Provides a GUI for managing PostgreSQL databases','Automates PostgreSQL HA with automatic failover using a distributed configuration store','Adds horizontal sharding to PostgreSQL','Manages PostgreSQL query optimization'],ans:1,cat:'replication',exp:'Patroni is a PostgreSQL HA solution that uses a distributed configuration store (etcd, Consul, or ZooKeeper) to coordinate a cluster. It monitors primary health, handles automatic failover by promoting the best replica, fences the failed primary, and updates DNS/load balancer endpoints.'},
+  {q:'What is PITR in database operations?',opts:['Point-in-Time Replication — copying data between time zones','Point-in-Time Recovery — restoring a database to a specific moment by replaying WAL from a backup','Parallel Insert Transaction Recording — a technique for fast bulk loads','Primary Instance Takeover and Restart — the failover process'],ans:1,cat:'replication',exp:'PITR (Point-in-Time Recovery) restores a database to any specific moment in time by: 1) restoring a base backup, 2) replaying WAL/binlog up to the target timestamp. Essential for recovering from accidental data deletion or corruption. Requires continuous WAL archiving to S3/GCS.'},
+  {q:'What does the Galera Cluster provide for MySQL/MariaDB?',opts:['Read scaling through async replicas','Synchronous multi-master replication — every node accepts writes, all committed on all nodes simultaneously','Automatic sharding across multiple MySQL instances','A GUI tool for MySQL cluster management'],ans:1,cat:'replication',exp:'Galera Cluster provides synchronous multi-master replication using wsrep API. Every write is committed on ALL nodes before returning success — zero replication lag between nodes. Any node can accept writes. Provides high availability and no data loss. Used by MariaDB Galera Cluster and Percona XtraDB Cluster.'},
+];
+
+let quizState = {
+  category: 'all',
+  questions: [],
+  current: 0,
+  score: 0,
+  answered: false,
+  results: []
+};
+
+function selectQuizCat(btn, cat){
+  document.querySelectorAll('.quiz-cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  quizState.category = cat;
+}
+
+function startQuiz(){
+  let pool = allQuizQuestions;
+  if(quizState.category !== 'all'){
+    pool = allQuizQuestions.filter(q => q.cat === quizState.category);
+  }
+  // Shuffle and take up to 15 questions
+  quizState.questions = [...pool].sort(()=>Math.random()-.5).slice(0, Math.min(15, pool.length));
+  quizState.current = 0;
+  quizState.score = 0;
+  quizState.answered = false;
+  quizState.results = [];
+
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-active').style.display = 'block';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  const q = quizState.questions[quizState.current];
+  const total = quizState.questions.length;
+  const pct = ((quizState.current) / total * 100).toFixed(0);
+
+  document.getElementById('quiz-prog-fill').style.width = pct + '%';
+  document.getElementById('quiz-prog-text').textContent = `Question ${quizState.current + 1} of ${total}`;
+  document.getElementById('quiz-score-badge').textContent = `Score: ${quizState.score}/${quizState.current}`;
+
+  const catLabels = {sql:'SQL & Relational',nosql:'NoSQL',perf:'Performance',k8s:'K8s & Operators',replication:'Replication & HA'};
+  const letters = ['A','B','C','D'];
+
+  document.getElementById('quiz-q-wrap').innerHTML = `
+    <div class="quiz-q-cat">${catLabels[q.cat]||q.cat}</div>
+    <div class="quiz-question">${q.q}</div>
+    <div class="quiz-options" id="quiz-opts">
+      ${q.opts.map((opt,i) => `
+        <button class="quiz-opt" onclick="answerQuiz(${i})" id="quiz-opt-${i}">
+          <span class="quiz-opt-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </button>`).join('')}
+    </div>
+    <div id="quiz-exp" style="display:none"></div>
+    <div id="quiz-next-wrap" style="display:none">
+      <button class="quiz-next-btn" onclick="nextQuizQuestion()">
+        ${quizState.current < quizState.questions.length - 1 ? 'Next Question →' : 'See Results →'}
+      </button>
+    </div>`;
+}
+
+function answerQuiz(chosen){
+  if(quizState.answered) return;
+  quizState.answered = true;
+
+  const q = quizState.questions[quizState.current];
+  const isCorrect = chosen === q.ans;
+  if(isCorrect) quizState.score++;
+  quizState.results.push({q:q.q, chosen, correct:q.ans, ok:isCorrect});
+
+  // Style options
+  for(let i=0;i<q.opts.length;i++){
+    const btn = document.getElementById('quiz-opt-'+i);
+    btn.disabled = true;
+    if(i === q.ans) btn.classList.add('correct');
+    else if(i === chosen && !isCorrect) btn.classList.add('wrong');
+  }
+
+  // Show explanation
+  const expDiv = document.getElementById('quiz-exp');
+  expDiv.innerHTML = `<div class="quiz-explanation"><strong>${isCorrect ? '✅ Correct!' : '❌ Incorrect.'}</strong> ${q.exp}</div>`;
+  expDiv.style.display = 'block';
+  document.getElementById('quiz-next-wrap').style.display = 'block';
+  document.getElementById('quiz-score-badge').textContent = `Score: ${quizState.score}/${quizState.current+1}`;
+}
+
+function nextQuizQuestion(){
+  quizState.current++;
+  quizState.answered = false;
+
+  if(quizState.current >= quizState.questions.length){
+    showQuizResults();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+function showQuizResults(){
+  document.getElementById('quiz-active').style.display = 'none';
+  const res = document.getElementById('quiz-result');
+  res.style.display = 'block';
+
+  const pct = Math.round(quizState.score / quizState.questions.length * 100);
+  const grade = pct >= 90 ? '🏆 Expert' : pct >= 75 ? '⭐ Advanced' : pct >= 60 ? '📚 Intermediate' : '🌱 Keep Learning';
+  const color = pct >= 75 ? 'var(--accent3)' : pct >= 60 ? 'var(--accent5)' : 'var(--accent4)';
+
+  res.innerHTML = `
+    <div class="quiz-result-score" style="color:${color}">${pct}%</div>
+    <div class="quiz-result-label">${grade}</div>
+    <div class="quiz-result-stats">
+      <div class="quiz-stat-item"><div class="quiz-stat-num" style="color:var(--accent3)">${quizState.score}</div><div class="quiz-stat-lbl">Correct</div></div>
+      <div class="quiz-stat-item"><div class="quiz-stat-num" style="color:var(--accent4)">${quizState.questions.length - quizState.score}</div><div class="quiz-stat-lbl">Incorrect</div></div>
+      <div class="quiz-stat-item"><div class="quiz-stat-num" style="color:var(--accent)">${quizState.questions.length}</div><div class="quiz-stat-lbl">Total</div></div>
+    </div>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="retryQuiz()">Try Again</button>
+      <button class="btn btn-outline" onclick="resetQuiz()">Change Category</button>
+    </div>
+    <div style="margin-top:2rem;text-align:left">
+      <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:1rem">Review</div>
+      ${quizState.results.map((r,i)=>`
+        <div style="padding:.6rem .75rem;margin-bottom:.4rem;border-radius:8px;font-size:.8rem;background:${r.ok?'rgba(0,212,170,.07)':'rgba(247,114,79,.07)'};border:1px solid ${r.ok?'rgba(0,212,170,.2)':'rgba(247,114,79,.2)'}">
+          ${r.ok?'✅':'❌'} ${r.q}
+        </div>`).join('')}
+    </div>`;
+}
+
+function retryQuiz(){ startQuiz(); }
+function resetQuiz(){
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-active').style.display = 'none';
+  document.getElementById('quiz-start').style.display = 'block';
+}
+
+
+// ============================================================
+// DAILY CHALLENGE
+// ============================================================
+const dailyChallenges = [
+  {id:1,title:'Write a query to find the top 5 customers by total order value',db:'PostgreSQL',difficulty:'Medium',category:'SQL',
+   prompt:'You have two tables: <code>customers(id, name, email)</code> and <code>orders(id, customer_id, total, created_at, status)</code>.\n\nWrite a SQL query to find the top 5 customers by total completed order value, showing their name, email, order count, and total spent.',
+   hint:'Use a JOIN between customers and orders, filter on status=\'completed\', GROUP BY customer fields, SUM the total, and ORDER BY the sum DESC with LIMIT 5.',
+   solution:`SELECT c.name, c.email,
+  COUNT(o.id) AS order_count,
+  SUM(o.total) AS total_spent
+FROM customers c
+JOIN orders o ON c.id = o.customer_id
+WHERE o.status = 'completed'
+GROUP BY c.id, c.name, c.email
+ORDER BY total_spent DESC
+LIMIT 5;`,
+   explanation:'The JOIN links customers to their orders. WHERE filters before grouping (efficient). GROUP BY collapses multiple orders per customer. SUM aggregates their spend. LIMIT 5 returns only top results. Add an index on orders(customer_id, status) for best performance.'},
+  {id:2,title:'Design a Redis caching strategy for an API endpoint',db:'Redis',difficulty:'Medium',category:'Caching',
+   prompt:'You have an API endpoint <code>GET /products/{id}</code> that queries PostgreSQL and takes ~200ms. It receives 10,000 requests/minute, with product data changing only a few times per day.\n\nDesign a Redis caching strategy. What key, TTL, and invalidation approach would you use?',
+   hint:'Think about: cache key naming, appropriate TTL for data that changes a few times/day, cache-aside vs write-through, and how to invalidate when a product is updated.',
+   solution:`# Cache key naming
+KEY = "product:{product_id}"  # e.g. "product:42"
+
+# Read path (cache-aside pattern)
+data = redis.GET(KEY)
+if not data:
+    data = postgres.query("SELECT * FROM products WHERE id = %s", product_id)
+    redis.SET(KEY, json.dumps(data), EX=3600)  # 1 hour TTL
+return data
+
+# Write/update path (cache invalidation)
+def update_product(product_id, updates):
+    postgres.update(product_id, updates)
+    redis.DEL(f"product:{product_id}")  # invalidate immediately
+
+# Alternative: short TTL approach (no explicit invalidation)
+redis.SET(KEY, data, EX=300)  # 5 min TTL — stale for max 5 min`,
+   explanation:'Cache-aside: check cache first, populate on miss. TTL 1-4 hours for data changing a few times/day. Explicit DEL on update ensures immediate consistency. Alternative: short TTL (5 min) for simpler code at cost of brief staleness. Key format product:{id} is clear and avoids collisions.'},
+  {id:3,title:'Explain and fix a replication lag issue',db:'PostgreSQL',difficulty:'Hard',category:'Replication',
+   prompt:'Your monitoring shows a PostgreSQL replica is 45 seconds behind the primary. The replica is handling read queries from your application.\n\nList the 5 most likely causes and for each, describe how you would diagnose and fix it.',
+   hint:'Think about: network bandwidth, replica resources (CPU/IO), large transactions, hot standby conflicts, and wal_keep_size settings.',
+   solution:`# 1. Check current lag
+SELECT now() - pg_last_xact_replay_timestamp() AS lag;
+SELECT client_addr, replay_lag FROM pg_stat_replication;
+
+# 2. Causes & fixes:
+
+# Slow replica disk I/O
+iostat -x 1 10  # on replica — check util%
+# Fix: upgrade storage to SSD, reduce replica query load
+
+# Large transactions blocking WAL replay
+SELECT pid, query, state FROM pg_stat_activity WHERE state = 'idle in transaction';
+# Fix: break large transactions into smaller batches
+
+# Hot standby conflicts (queries blocking WAL apply)
+SELECT * FROM pg_stat_replication_conflicts;
+# Fix: set max_standby_streaming_delay = 30s or hot_standby_feedback = on
+
+# Network bandwidth saturation
+iftop  # check primary-to-replica bandwidth
+# Fix: use wal_compression = on on primary
+
+# wal_keep_size too small causing replica to fall behind
+SHOW wal_keep_size;
+# Fix: increase wal_keep_size or use replication slots`,
+   explanation:'Replica lag has many causes. Always check pg_stat_replication for lag bytes first. Hot standby conflicts are common — long-running replica queries block WAL apply. wal_compression reduces network usage significantly. If lag is chronic, consider a dedicated replica for reads separate from the failover standby.'},
+  {id:4,title:'Design a MongoDB schema for a multi-tenant SaaS',db:'MongoDB',difficulty:'Hard',category:'Schema Design',
+   prompt:'You\'re building a project management SaaS. Each tenant (company) has users, projects, and tasks. Projects have many tasks. Tasks have comments.\n\nDesign the MongoDB schema. What should be embedded vs referenced? Justify your choices.',
+   hint:'Think about the most common read patterns: viewing a project with tasks, viewing task details with comments, listing projects for a user.',
+   solution:`// Tenant — separate collection, referenced by tenant_id
+{ _id: ObjectId, name: "Acme Corp", plan: "pro", created: Date }
+
+// User — referenced (updated independently, shared across projects)
+{ _id: ObjectId, tenant_id: ObjectId, name: String, email: String, role: String }
+
+// Project — referenced from tasks
+{ _id: ObjectId, tenant_id: ObjectId, name: String,
+  owner_id: ObjectId, members: [ObjectId],  // user refs
+  status: String, created: Date }
+
+// Task — embed recent comments (< 10), reference old ones
+{
+  _id: ObjectId,
+  tenant_id: ObjectId,
+  project_id: ObjectId,       // reference — projects queried separately
+  title: String, description: String,
+  assignee_id: ObjectId,       // reference — user updated independently
+  status: String, priority: String,
+  due_date: Date,
+  comments: [                  // EMBED latest comments — always read together
+    { author_id: ObjectId, text: String, created: Date }
+  ],  // cap at 20 embedded, paginate older ones separately
+  comment_count: Number,
+  tags: [String],
+  created: Date, updated: Date
+}
+
+// Indexes
+db.tasks.createIndex({ tenant_id: 1, project_id: 1, status: 1 })
+db.tasks.createIndex({ tenant_id: 1, assignee_id: 1, due_date: 1 })`,
+   explanation:'Embed comments in tasks (read together, limited count). Reference users and projects (updated independently, large documents). tenant_id on every document enables multi-tenant queries. Index on (tenant_id, project_id, status) covers the most common query: all tasks for a project by status.'},
+  {id:5,title:'Set up a CloudNativePG cluster on Kubernetes',db:'Kubernetes',difficulty:'Hard',category:'K8s Operators',
+   prompt:'You need to deploy a production-ready PostgreSQL cluster on Kubernetes using the CloudNativePG operator.\n\nWrite the Kubernetes manifest for a 3-instance cluster with: S3 backup, Prometheus monitoring, connection pooling, and 50Gi SSD storage.',
+   hint:'CloudNativePG uses the Cluster CRD. Key fields: instances, storage, backup.barmanObjectStore, monitoring.enablePodMonitor.',
+   solution:`apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-prod
+  namespace: databases
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+
+  postgresql:
+    parameters:
+      shared_buffers: "512MB"
+      max_connections: "200"
+      wal_level: "logical"
+      log_min_duration_statement: "1000"
+
+  bootstrap:
+    initdb:
+      database: myapp
+      owner: app_user
+      secret:
+        name: postgres-credentials
+
+  storage:
+    size: 50Gi
+    storageClass: fast-ssd
+
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://my-backups/postgres/"
+      s3Credentials:
+        accessKeyId:
+          name: s3-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: s3-creds
+          key: SECRET_ACCESS_KEY
+    retentionPolicy: "30d"
+
+  monitoring:
+    enablePodMonitor: true
+
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"`,
+   explanation:'CloudNativePG manages the entire lifecycle. instances:3 creates 1 primary + 2 replicas. barmanObjectStore enables WAL archiving + base backups to S3. enablePodMonitor creates a Prometheus PodMonitor automatically. Always use SSD StorageClass for databases. Monitor with: kubectl cnpg status postgres-prod'},
+  {id:6,title:'Optimize a slow time-series query in TimescaleDB',db:'TimescaleDB',difficulty:'Medium',category:'Performance',
+   prompt:'You have a TimescaleDB hypertable with 2 billion IoT sensor readings. This query takes 45 seconds:\n\n<code>SELECT AVG(value) FROM sensor_data WHERE device_id=101 AND time > NOW()-INTERVAL \'30 days\'</code>\n\nHow would you optimize it?',
+   hint:'Think about: hypertable chunk interval, indexes on device_id, continuous aggregates for pre-computed results.',
+   solution:`-- 1. Check current chunk interval (default 7 days)
+SELECT * FROM timescaledb_information.dimensions WHERE hypertable_name = 'sensor_data';
+
+-- 2. Add index if missing
+CREATE INDEX ON sensor_data (device_id, time DESC);
+
+-- 3. Check how many chunks the query hits
+EXPLAIN SELECT AVG(value) FROM sensor_data
+  WHERE device_id=101 AND time > NOW()-INTERVAL '30 days';
+-- Look for "Chunks excluded" in EXPLAIN output
+
+-- 4. Create a continuous aggregate (pre-compute hourly averages)
+CREATE MATERIALIZED VIEW hourly_device_avg
+WITH (timescaledb.continuous) AS
+SELECT time_bucket('1 hour', time) AS hour,
+       device_id,
+       AVG(value) AS avg_value,
+       COUNT(*) AS samples
+FROM sensor_data
+GROUP BY hour, device_id WITH NO DATA;
+
+SELECT add_continuous_aggregate_policy('hourly_device_avg',
+  start_offset => INTERVAL '2 days',
+  end_offset => INTERVAL '1 hour',
+  schedule_interval => INTERVAL '1 hour');
+
+-- 5. Query the aggregate instead (instant)
+SELECT AVG(avg_value) FROM hourly_device_avg
+WHERE device_id=101 AND hour > NOW()-INTERVAL '30 days';`,
+   explanation:'The composite index (device_id, time DESC) enables chunk exclusion and index scans within chunks. The continuous aggregate pre-computes hourly averages — the optimized query now reads at most 720 pre-aggregated rows instead of millions of raw readings. 30-day query goes from 45s to <10ms.'},
+  {id:7,title:'Write a Cassandra data model for a messaging app',db:'Cassandra',difficulty:'Hard',category:'NoSQL Design',
+   prompt:'Design a Cassandra schema for a messaging app with these access patterns:\n1. Get all messages in a conversation, newest first\n2. Get unread message count per user\n3. Get all conversations for a user\n\nCassandra has no JOINs — one table per query pattern.',
+   hint:'Each table is designed for exactly one query. Partition key determines distribution, clustering columns determine sort order within a partition.',
+   solution:`-- Query 1: Get messages in a conversation, newest first
+CREATE TABLE messages_by_conversation (
+  conversation_id UUID,
+  sent_at         TIMEUUID,    -- TIMEUUID = time-based UUID, automatically sorted
+  sender_id       UUID,
+  message_text    TEXT,
+  message_type    TEXT,        -- text, image, file
+  PRIMARY KEY (conversation_id, sent_at)
+) WITH CLUSTERING ORDER BY (sent_at DESC)
+  AND default_time_to_live = 7776000;  -- 90 days auto-expiry
+
+-- Query 2: Unread count per user
+CREATE TABLE unread_counts (
+  user_id         UUID,
+  conversation_id UUID,
+  unread_count    COUNTER,
+  PRIMARY KEY (user_id, conversation_id)
+);
+UPDATE unread_counts SET unread_count = unread_count + 1
+  WHERE user_id=? AND conversation_id=?;
+
+-- Query 3: All conversations for a user
+CREATE TABLE conversations_by_user (
+  user_id         UUID,
+  last_message_at TIMEUUID,
+  conversation_id UUID,
+  other_user_id   UUID,
+  last_message    TEXT,
+  PRIMARY KEY (user_id, last_message_at)
+) WITH CLUSTERING ORDER BY (last_message_at DESC);`,
+   explanation:'Three tables, three queries. TIMEUUID for messages gives automatic time-ordering without secondary sort. COUNTER type for unread counts enables atomic increments. conversations_by_user is sorted by last_message_at so the most recent conversation appears first. Each table is denormalized — data is duplicated across tables by design.'},
+  {id:8,title:'Implement a sliding window rate limiter with Redis',db:'Redis',difficulty:'Medium',category:'Patterns',
+   prompt:'Implement a sliding window rate limiter that allows max 100 requests per user per minute using Redis.\n\nThe solution must be atomic (no race conditions) and accurate (not just fixed window).',
+   hint:'Use a Sorted Set where the score is the timestamp. ZADD adds the request, ZREMRANGEBYSCORE removes old ones, ZCARD counts current requests. Wrap in a Lua script for atomicity.',
+   solution:`-- Lua script for atomic sliding window rate limit
+-- KEYS[1] = rate_limit:{user_id}
+-- ARGV[1] = current timestamp (milliseconds)
+-- ARGV[2] = window size (60000ms = 1 minute)
+-- ARGV[3] = max requests (100)
+
+local key = KEYS[1]
+local now = tonumber(ARGV[1])
+local window = tonumber(ARGV[2])
+local limit = tonumber(ARGV[3])
+local min_score = now - window
+
+-- Remove requests outside the window
+redis.call('ZREMRANGEBYSCORE', key, '-inf', min_score)
+
+-- Count current requests in window
+local count = redis.call('ZCARD', key)
+
+if count < limit then
+  -- Add current request with timestamp as score
+  redis.call('ZADD', key, now, now .. '-' .. math.random())
+  redis.call('PEXPIRE', key, window)
+  return {1, limit - count - 1}  -- allowed, remaining
+else
+  return {0, 0}  -- rejected, 0 remaining
+end
+
+-- Call from application:
+-- EVAL script 1 "rate_limit:user123" 1699000000000 60000 100`,
+   explanation:'Sorted Set with timestamp as score enables precise sliding window. ZREMRANGEBYSCORE removes entries older than 1 minute. ZCARD counts remaining. Lua script is atomic — executed as a single Redis command, preventing race conditions. PEXPIRE auto-cleans keys for inactive users. More accurate than fixed window which resets counts abruptly.'},
+];
+
+function getTodayChallenge(){
+  // Pick challenge based on day of year for consistent daily rotation
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  return dailyChallenges[dayOfYear % dailyChallenges.length];
+}
+
+function loadDailyState(){
+  try {
+    return JSON.parse(localStorage.getItem('eknathalabs_daily') || '{}');
+  } catch(e){ return {}; }
+}
+
+function saveDailyState(state){
+  try { localStorage.setItem('eknathalabs_daily', JSON.stringify(state)); } catch(e){}
+}
+
+function getStreak(state){
+  if(!state.dates || !state.dates.length) return 0;
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now()-86400000).toDateString();
+  const sorted = [...state.dates].sort((a,b)=>new Date(b)-new Date(a));
+  if(sorted[0] !== today && sorted[0] !== yesterday) return 0;
+  let streak = 0;
+  let check = new Date(sorted[0]);
+  for(let i=0;i<sorted.length;i++){
+    if(sorted[i] === check.toDateString()){ streak++; check = new Date(check - 86400000); }
+    else break;
+  }
+  return streak;
+}
+
+function renderDailyChallenge(){
+  const challenge = getTodayChallenge();
+  const state = loadDailyState();
+  const today = new Date().toDateString();
+  const done = state.completed && state.completed.includes(today + '-' + challenge.id);
+  const diffColors = {Easy:'var(--accent3)',Medium:'var(--accent5)',Hard:'var(--accent4)'};
+
+  document.getElementById('daily-card').innerHTML = `
+    <div class="daily-badge">📅 Today's Challenge — ${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</div>
+    <div class="daily-title">${challenge.title}</div>
+    <div class="daily-meta">
+      <span class="daily-tag" style="color:${diffColors[challenge.difficulty]};border-color:${diffColors[challenge.difficulty]}">
+        ${challenge.difficulty}
+      </span>
+      <span class="daily-tag">${challenge.db}</span>
+      <span class="daily-tag">${challenge.category}</span>
+    </div>
+    <div class="daily-prompt">${challenge.prompt}</div>
+    <textarea class="daily-textarea" id="daily-answer" placeholder="Write your answer here..."></textarea>
+    <div class="daily-btn-row">
+      <button class="daily-submit-btn" onclick="submitDailyChallenge()" ${done?'disabled':''}>
+        ${done ? '✅ Submitted Today' : 'Submit Answer'}
+      </button>
+      <button class="daily-hint-btn" onclick="toggleDailyHint()">💡 Show Hint</button>
+      <button class="daily-hint-btn" onclick="toggleDailySolution()">📖 Show Solution</button>
+    </div>
+    <div class="daily-solution" id="daily-hint">
+      <strong style="color:var(--accent5)">Hint:</strong> ${challenge.hint}
+    </div>
+    <div class="daily-solution" id="daily-solution">
+      <strong style="color:var(--accent3)">Solution:</strong>
+      <div class="daily-solution-code">${challenge.solution}</div>
+      <div style="margin-top:.75rem;font-size:.83rem;color:var(--text2);line-height:1.7">${challenge.explanation}</div>
+    </div>`;
+
+  // Streak
+  document.getElementById('streak-num').textContent = getStreak(state);
+
+  // History
+  const dates = (state.dates||[]).slice(-7).reverse();
+  document.getElementById('daily-history').innerHTML = dates.length ?
+    dates.map(d => {
+      const isToday = d===today;
+      return `<div class="daily-hist-item">
+        <span class="daily-hist-date">${isToday?'Today':new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
+        <span class="daily-hist-status daily-hist-done">Done ✓</span>
+      </div>`;
+    }).join('') :
+    '<div style="font-size:.78rem;color:var(--text3);padding:.5rem 0">No history yet — complete today\'s challenge!</div>';
+
+  // Topics
+  const topics = [...new Set(dailyChallenges.map(c=>c.category))];
+  document.getElementById('daily-topics').innerHTML = topics.map(t =>
+    `<span class="daily-topic-tag">${t}</span>`).join('');
+}
+
+function toggleDailyHint(){
+  document.getElementById('daily-hint').classList.toggle('show');
+}
+function toggleDailySolution(){
+  document.getElementById('daily-solution').classList.toggle('show');
+}
+
+function submitDailyChallenge(){
+  const state = loadDailyState();
+  const today = new Date().toDateString();
+  const challenge = getTodayChallenge();
+
+  if(!state.completed) state.completed = [];
+  if(!state.dates) state.dates = [];
+
+  const key = today + '-' + challenge.id;
+  if(!state.completed.includes(key)){
+    state.completed.push(key);
+    if(!state.dates.includes(today)) state.dates.push(today);
+    saveDailyState(state);
+  }
+
+  renderDailyChallenge();
+  // Show solution
+  document.getElementById('daily-solution').classList.add('show');
+}
+
+// Add new nav links
+(function(){
+  const nav = document.querySelector('.nav-links');
+  if(nav){
+    const items = [
+      ['#query-explainer','Query Explainer'],
+      ['#glossary','Glossary'],
+      ['#quiz','Quiz'],
+      ['#daily-challenge','Daily']
+    ];
+    items.forEach(([href,label])=>{
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${href}">${label}</a>`;
+      nav.insertBefore(li, nav.lastElementChild);
+    });
+  }
+})();
+
+renderDailyChallenge();
 
 
 </script>
