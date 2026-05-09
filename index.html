@@ -2223,10 +2223,10 @@ LIMIT 20;"></textarea>
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">eknathalabs / db</div>
-  <p class="footer-sub">Built with ♥ by EknathaLabs — For Everyoner</p>
+  <p class="footer-sub">Built with ♥ by EknathaLabs — Platform Engineer & DevOps Practitioner & Everyone </p>
   <div class="footer-links">
     <a href="https://eknathalabs.com" target="_blank">eknathalabs.com</a>
-    <a href="https://github.com/eknathareddyp" target="_blank">GitHub</a>
+    <a href="https://github.com/eknatha" target="_blank">GitHub</a>
     <a href="https://linux.eknathalabs.com" target="_blank">Linux Lab</a>
     <a href="https://kubelab.eknathalabs.com" target="_blank">KubeLab</a>
     <a href="https://terraform.eknathalabs.com" target="_blank">Terraform Lab</a>
@@ -8564,7 +8564,7 @@ SET session:abc123 '{"user_id":42,"user_name":"Alice","role":"admin"}'
 
 # Solution 2: application-side join (2 round trips)
 user_id = HGET session:abc123 user_id
-user_data = HGETALL user:${user_id}
+user_data = HGETALL user:\${user_id}
 
 # Solution 3: cache the join result
 SET user_session:42 '{"session_id":"abc","name":"Alice","role":"admin"}' EX 300`, note:'Redis is not relational. Denormalize data into the value (embed related data). Cache join results with appropriate TTL.' },
@@ -8589,7 +8589,7 @@ SET email:alice@example.com 42    # reverse index
 
 # Lookup by email:
 user_id = GET email:alice@example.com
-user = GET user:${user_id}
+user = GET user:\${user_id}
 
 # Sets for category index
 SADD tag:kubernetes article:1 article:2 article:5
