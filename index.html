@@ -2246,7 +2246,7 @@ LIMIT 20;"></textarea>
     <a href="https://terraform.eknathalabs.com" target="_blank">Terraform Lab</a>
     <a href="https://blog.eknathalabs.com" target="_blank">Blog</a>
   </div>
-  <p class="footer-copy">© 2026 EknathaLabs — db.eknathalabs.com — All databases, all patterns, one place.</p>
+  <p class="footer-copy">© 2026 EknathLabs — db.eknathalabs.com — All databases, all patterns, one place.</p>
 </footer>
 
 <script>
@@ -8653,17 +8653,17 @@ function renderMap() {
   var img = document.getElementById('vc-img');
   if (!img) return;
 
-  // 4 services tried in order — pure img tags, no CORS restriction
-  // All are battle-tested, free, no API key required
+  // Services that track the SPECIFIC URL: https://db.eknathalabs.com
+  // Pure img tags — no CORS, no API keys, no JS fetch needed
   var services = [
-    // 1. komarev.com — most reliable, used on millions of GitHub READMEs
-    'https://komarev.com/ghpvc/?username=eknatha&style=flat-square&color=4f8ef7&label=visitors',
-    // 2. profile-counter.glitch.me — GitHub profile counter
-    'https://profile-counter.glitch.me/eknatha/count.svg',
-    // 3. hits.seeyoufarm.com — general page hit counter
+    // 1. hits.seeyoufarm.com — tracks any URL, most widely used
     'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdb.eknathalabs.com&count_bg=%234f8ef7&title_bg=%230a0e1a&title=visitors&edge_flat=false',
-    // 4. visitor-badge.laobi.icu — GitHub-based visitor badge
+    // 2. visitor-badge.laobi.icu — page-specific badge
     'https://visitor-badge.laobi.icu/badge?page_id=eknatha.db-encyclopedia',
+    // 3. count.getloli.com — anime-style page counter
+    'https://count.getloli.com/@db-eknathalabs?name=db-eknathalabs&theme=asoul&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto',
+    // 4. moe-counter.glitch.me — page-specific counter
+    'https://moe-counter.glitch.me/get/@db-eknathalabs-com',
   ];
 
   var i = 0;
