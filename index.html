@@ -1017,10 +1017,8 @@ footer {
 
 /* VISITOR COUNTER */
 .visitor-counter-wrap{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin:1.5rem 0;}
-.visitor-counter-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
-.vc-item{padding:.9rem 2.5rem;text-align:center;}
-.vc-num{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--accent);line-height:1;}
-.vc-lbl{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:.3rem;}
+.vc-label{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:2px;font-weight:600;}
+.vc-badge-row{display:flex;align-items:center;gap:.75rem;}
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeInUp {
@@ -2230,17 +2228,14 @@ LIMIT 20;"></textarea>
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">eknathalabs / db</div>
-  <p class="footer-sub">Built with ♥ by EknathaLabs — Platform Engineer & DevOps Practitioner & Everyone </p>
+  <p class="footer-sub">Built with ♥ by Eknatha Reddy — Platform Engineer & DevOps Practitioner</p>
 
   <!-- VISITOR COUNTER -->
   <div class="visitor-counter-wrap">
-    <div class="visitor-counter-card">
-      <div class="vc-item">
-        <div class="vc-num" id="vc-total">—</div>
-        <div class="vc-lbl">👁 Total Visitors</div>
-      </div>
+    <div class="vc-label">👁 Total Visitors</div>
+    <div class="vc-badge-row">
+      <img id="vc-img" alt="visitors" style="height:28px;border-radius:4px">
     </div>
-    <div id="vc-status" style="font-size:.68rem;color:var(--text3);margin-top:.25rem"></div>
   </div>
 
   <div class="footer-links">
@@ -8651,65 +8646,38 @@ function renderMap() {
 
 
 
-// ============================================================
-// VISITOR COUNTER — api.counterapi.dev (free, no API key, open CORS)
-// ============================================================
-(function() {
-  var el = document.getElementById('vc-total');
-  var st = document.getElementById('vc-status');
-  if (!el) return;
 
-  el.textContent = '...';
 
-  // api.counterapi.dev: completely free, no signup, open CORS for browsers
-  // POST /v1/{namespace}/{key}/up  → increments and returns { count: N }
-  // Namespace auto-created on first hit
-  var PRIMARY = 'https://api.counterapi.dev/v1/eknathalabs/db-encyclopedia/up';
+// ===== VISITOR COUNTER =====
+(function(){
+  var img = document.getElementById('vc-img');
+  if (!img) return;
 
-  function showCount(n) {
-    el.textContent = n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
-    if (st) st.textContent = '';
+  // 4 services tried in order — pure img tags, no CORS restriction
+  // All are battle-tested, free, no API key required
+  var services = [
+    // 1. komarev.com — most reliable, used on millions of GitHub READMEs
+    'https://komarev.com/ghpvc/?username=eknatha&style=flat-square&color=4f8ef7&label=visitors',
+    // 2. profile-counter.glitch.me — GitHub profile counter
+    'https://profile-counter.glitch.me/eknatha/count.svg',
+    // 3. hits.seeyoufarm.com — general page hit counter
+    'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdb.eknathalabs.com&count_bg=%234f8ef7&title_bg=%230a0e1a&title=visitors&edge_flat=false',
+    // 4. visitor-badge.laobi.icu — GitHub-based visitor badge
+    'https://visitor-badge.laobi.icu/badge?page_id=eknatha.db-encyclopedia',
+  ];
+
+  var i = 0;
+  function tryNext() {
+    if (i >= services.length) {
+      img.alt = '—';
+      img.style.cssText = 'display:inline-block;padding:4px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;font-size:.75rem;color:var(--text3)';
+      img.outerHTML = '<span style="font-size:.75rem;color:var(--text3);padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:4px">— visitors</span>';
+      return;
+    }
+    img.src = services[i++];
   }
-
-  function showFallbackBadge() {
-    // hits.seeyoufarm.com — pure img tag, increments on load, shows total
-    el.style.display = 'none';
-    var wrap = el.parentNode;
-    var img = document.createElement('img');
-    img.src = 'https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdb.eknathalabs.com&count_bg=%234f8ef7&title_bg=%230a0e1a&title=visitors&edge_flat=true';
-    img.alt = 'visitor count';
-    img.style.cssText = 'height:28px;border-radius:4px;margin-top:4px';
-    img.onerror = function() {
-      el.style.display = '';
-      el.textContent = '—';
-      if (st) st.textContent = 'counter unavailable';
-      img.remove();
-    };
-    img.onload = function() {
-      if (st) st.textContent = '';
-    };
-    wrap.appendChild(img);
-  }
-
-  // Try primary counter
-  fetch(PRIMARY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }
-  })
-    .then(function(r) {
-      if (!r.ok) throw new Error('status ' + r.status);
-      return r.json();
-    })
-    .then(function(data) {
-      // api.counterapi.dev returns { count: N, ... }
-      var n = data.count || data.value || data.hits || 0;
-      if (n > 0) { showCount(n); return; }
-      throw new Error('zero count');
-    })
-    .catch(function() {
-      // Fallback: hits.seeyoufarm.com img badge
-      showFallbackBadge();
-    });
+  img.onerror = tryNext;
+  tryNext();
 })();
 </script>
 </body>
