@@ -80,61 +80,6 @@ Every question ships with a detailed explanation, not just an answer key.
 
 ---
 
-## Repository Structure
-
-```
-db-encyclopedia/
-├── index.html                     # Markup + ordered script tags
-├── css/
-│   └── styles.css                 # All styling, CSS custom properties
-├── js/
-│   ├── data/
-│   │   ├── databases.js           # 44 database profiles
-│   │   ├── tutorials.js           # 16 tutorials
-│   │   └── quiz-questions.js      # 211 questions
-│   ├── tools/
-│   │   └── isolation-visualizer.js
-│   ├── theme.js                   # Dark/light toggle, OS-aware, no-flash
-│   ├── core.js                    # Network badge, service worker
-│   ├── encyclopedia.js            # Profiles, filtering, matrix
-│   ├── wizard.js                  # Decision wizard
-│   ├── advisor.js                 # Rule-based AI advisor
-│   ├── tutorials.js
-│   ├── query-explainer.js
-│   ├── glossary.js
-│   ├── quiz.js
-│   ├── daily-challenge.js
-│   ├── datatype-picker.js
-│   ├── tools.js                   # 12 interactive tools
-│   └── visitor-counter.js
-├── CNAME
-├── .nojekyll
-└── README.md
-```
-
-Scripts load in dependency order: data files first, then the modules that consume them.
-
----
-
-## Local Development
-
-No build step, no package manager, no dependencies.
-
-```bash
-git clone https://github.com/eknatha/db-encyclopedia.git
-cd db-encyclopedia
-python3 -m http.server 8000
-# open http://localhost:8000
-```
-
-Validate all modules before committing:
-
-```bash
-for f in $(find js -name '*.js'); do node --check "$f" || echo "FAIL: $f"; done
-```
-
----
-
 ## Design Principles
 
 - **Offline-first** — no CDNs, no external fonts, no runtime fetches
@@ -142,12 +87,6 @@ for f in $(find js -name '*.js'); do node --check "$f" || echo "FAIL: $f"; done
 - **Zero dependencies** — vanilla JS, no framework, no bundler
 - **Data/logic separation** — content lives in `js/data/`, behaviour in modules
 - **Progressive enhancement** — every section degrades gracefully in isolation
-
----
-
-## Deployment
-
-GitHub Pages from the default branch root. `CNAME` sets the custom domain; `.nojekyll` prevents Jekyll from ignoring paths.
 
 ---
 
