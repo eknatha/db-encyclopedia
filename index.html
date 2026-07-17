@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB Encyclopedia — eknathalabs.com</title>
+<meta name="theme-color" content="#0a0e1a">
+<!-- Set theme BEFORE first paint to avoid a flash of the wrong theme.
+     Must stay inline and stay above the stylesheet. -->
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('db_enc_theme');
+    if(!t) t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    if(t === 'light') document.documentElement.setAttribute('data-theme','light');
+  }catch(e){ /* storage blocked: fall back to dark default */ }
+})();
+</script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">⬡ <span>eknathalabs</span> / db</a>
+  <ul class="nav-links">
+    <li><a href="#universe">Universe</a></li>
+    <li><a href="#encyclopedia">Encyclopedia</a></li>
+    <li><a href="#compare">Compare</a></li>
+    <li><a href="#wizard">Wizard</a></li>
+    <li><a href="#cloud">Cloud</a></li>
+    <li><a href="#k8s">Kubernetes</a></li>
+    <li><a href="#cheatsheets">Cheatsheets</a></li>
+    <li><a href="#advisor">AI Advisor</a></li>
+    <li><a href="#isolation">Isolation Lab</a></li>
+    <li><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch theme"></button></li>
+    <li><span id="vc-mount" class="vc-mount"></span></li>
+    <li><span id="net-badge" class="nav-tag" style="cursor:default">✦ Offline Ready</span></li>
+    <li><a href="https://eknathalabs.com" target="_blank" class="nav-tag">↗ eknathalabs</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+  <div class="hero-eyebrow">Database Knowledge Hub</div>
+  <h1>DB Encyclopedia</h1>
+  <p class="hero-sub">Every database. Every pattern. Every command. The complete reference for DevOps & Platform Engineers.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">40+</div><div class="stat-label">Databases</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Categories</div></div>
+    <div class="stat"><div class="stat-num">100+</div><div class="stat-label">Commands</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Learning Paths</div></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#encyclopedia" class="btn btn-primary">🔍 Explore Databases</a>
+    <a href="#wizard" class="btn btn-outline">⚡ Which DB for me?</a>
+  </div>
+  <div class="scroll-hint">↓ scroll to explore</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- UNIVERSE MAP -->
+<section id="universe">
+  <div class="section-header">
+    <div class="section-label">01 — Categories</div>
+    <h2 class="section-title">The Database Universe</h2>
+    <p class="section-desc">Ten major families of databases. Click any category to filter the encyclopedia below.</p>
+  </div>
+  <div class="universe-grid">
+    <div class="universe-card active" onclick="filterByCategory('all')" data-cat="all">
+      <span class="universe-icon">🌐</span>
+      <div class="universe-name">All Databases</div>
+      <div class="universe-count">44 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('relational')" data-cat="relational">
+      <span class="universe-icon">🗄️</span>
+      <div class="universe-name">Relational (SQL)</div>
+      <div class="universe-count">9 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('document')" data-cat="document">
+      <span class="universe-icon">📄</span>
+      <div class="universe-name">Document</div>
+      <div class="universe-count">3 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('keyvalue')" data-cat="keyvalue">
+      <span class="universe-icon">🔑</span>
+      <div class="universe-name">Key-Value</div>
+      <div class="universe-count">6 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('columnar')" data-cat="columnar">
+      <span class="universe-icon">📊</span>
+      <div class="universe-name">Columnar / Wide</div>
+      <div class="universe-count">5 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('graph')" data-cat="graph">
+      <span class="universe-icon">🕸️</span>
+      <div class="universe-name">Graph</div>
+      <div class="universe-count">2 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('timeseries')" data-cat="timeseries">
+      <span class="universe-icon">📈</span>
+      <div class="universe-name">Time Series</div>
+      <div class="universe-count">3 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('newsql')" data-cat="newsql">
+      <span class="universe-icon">⚡</span>
+      <div class="universe-name">NewSQL / Distributed</div>
+      <div class="universe-count">4 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('search')" data-cat="search">
+      <span class="universe-icon">🔍</span>
+      <div class="universe-name">Search Engines</div>
+      <div class="universe-count">2 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('vector')" data-cat="vector">
+      <span class="universe-icon">🧭</span>
+      <div class="universe-name">Vector / AI</div>
+      <div class="universe-count">6 databases</div>
+    </div>
+    <div class="universe-card" onclick="filterByCategory('warehouse')" data-cat="warehouse">
+      <span class="universe-icon">🏛️</span>
+      <div class="universe-name">Cloud Warehouse</div>
+      <div class="universe-count">4 databases</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ENCYCLOPEDIA -->
+<section id="encyclopedia">
+  <div class="section-header">
+    <div class="section-label">02 — Encyclopedia</div>
+    <h2 class="section-title">Database Profiles</h2>
+    <p class="section-desc">Click any card to expand full details, use cases, and K8s deployment info.</p>
+  </div>
+  <div class="search-bar-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-bar" type="text" placeholder="Search databases — try 'PostgreSQL', 'graph', 'ACID'..." id="db-search" oninput="searchDBs(this.value)">
+  </div>
+  <div class="filter-tags">
+    <button class="filter-tag active" onclick="filterTag(this,'all')">All</button>
+    <button class="filter-tag" onclick="filterTag(this,'acid')">ACID</button>
+    <button class="filter-tag" onclick="filterTag(this,'cloud')">Cloud Native</button>
+    <button class="filter-tag" onclick="filterTag(this,'popular')">Popular</button>
+    <button class="filter-tag" onclick="filterTag(this,'k8s')">K8s Operator</button>
+    <button class="filter-tag" onclick="filterTag(this,'open')">Open Source</button>
+  </div>
+  <div class="db-grid" id="db-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPARISON MATRIX -->
+<section id="compare">
+  <div class="section-header">
+    <div class="section-label">03 — Compare</div>
+    <h2 class="section-title">Feature Comparison Matrix</h2>
+    <p class="section-desc">Compare key databases across critical attributes. Click headers to sort.</p>
+  </div>
+  <div class="matrix-filters">
+    <button class="filter-tag active" onclick="matrixFilter(this,'all')">All</button>
+    <button class="filter-tag" onclick="matrixFilter(this,'relational')">Relational</button>
+    <button class="filter-tag" onclick="matrixFilter(this,'nosql')">NoSQL</button>
+    <button class="filter-tag" onclick="matrixFilter(this,'cloud')">Cloud Managed</button>
+  </div>
+  <div class="matrix-wrap">
+    <table class="matrix-table" id="matrix-table">
+      <thead>
+        <tr>
+          <th onclick="sortMatrix('name')">Database ↕</th>
+          <th onclick="sortMatrix('type')">Type ↕</th>
+          <th>ACID</th>
+          <th>H-Scale</th>
+          <th>K8s Op.</th>
+          <th>Cloud</th>
+          <th>Open Src</th>
+          <th onclick="sortMatrix('best')">Best For ↕</th>
+        </tr>
+      </thead>
+      <tbody id="matrix-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DECISION WIZARD -->
+<section id="wizard">
+  <div class="section-header">
+    <div class="section-label">04 — Wizard</div>
+    <h2 class="section-title">Which Database Should I Use?</h2>
+    <p class="section-desc">Answer 5 questions and get a tailored database recommendation.</p>
+  </div>
+  <div class="wizard-wrap">
+    <div class="wizard-progress" id="wizard-progress"></div>
+    <div id="wizard-container"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CLOUD MAP -->
+<section id="cloud">
+  <div class="section-header">
+    <div class="section-label">05 — Cloud</div>
+    <h2 class="section-title">Cloud Database Services</h2>
+    <p class="section-desc">AWS vs Azure vs GCP — side-by-side managed database service mapping.</p>
+  </div>
+  <div class="cloud-grid">
+    <div class="cloud-col">
+      <div class="cloud-header"><span class="cloud-badge">🟠</span> Amazon Web Services</div>
+      <div class="cloud-category">Relational</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon RDS</span><span class="cloud-service-desc">MySQL, Postgres, MariaDB, Oracle, SQL Server</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon Aurora</span><span class="cloud-service-desc">MySQL/Postgres compatible, 5x performance</span></div>
+      <div class="cloud-category">NoSQL Document</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon DocumentDB</span><span class="cloud-service-desc">MongoDB compatible, fully managed</span></div>
+      <div class="cloud-category">Key-Value</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon DynamoDB</span><span class="cloud-service-desc">Serverless, single-digit ms latency</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">ElastiCache</span><span class="cloud-service-desc">Redis & Memcached managed</span></div>
+      <div class="cloud-category">Analytics</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon Redshift</span><span class="cloud-service-desc">Data warehouse, columnar storage</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon Keyspaces</span><span class="cloud-service-desc">Cassandra compatible, serverless</span></div>
+      <div class="cloud-category">Time Series</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon Timestream</span><span class="cloud-service-desc">Purpose-built time series</span></div>
+      <div class="cloud-category">Graph</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon Neptune</span><span class="cloud-service-desc">Property graph + SPARQL</span></div>
+      <div class="cloud-category">Search</div>
+      <div class="cloud-service"><span class="cloud-service-name">Amazon OpenSearch</span><span class="cloud-service-desc">Fork of Elasticsearch</span></div>
+    </div>
+    <div class="cloud-col">
+      <div class="cloud-header"><span class="cloud-badge">🔵</span> Microsoft Azure</div>
+      <div class="cloud-category">Relational</div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure SQL Database</span><span class="cloud-service-desc">Fully managed SQL Server</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Database for PostgreSQL</span><span class="cloud-service-desc">Flexible Server, Hyperscale</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Database for MySQL</span><span class="cloud-service-desc">Flexible Server managed</span></div>
+      <div class="cloud-category">NoSQL / Multi-model</div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Cosmos DB</span><span class="cloud-service-desc">Multi-model: SQL, Mongo, Cassandra, Gremlin</span></div>
+      <div class="cloud-category">Key-Value</div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Cache for Redis</span><span class="cloud-service-desc">Enterprise Redis, managed</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Table Storage</span><span class="cloud-service-desc">NoSQL structured storage</span></div>
+      <div class="cloud-category">Analytics</div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Synapse Analytics</span><span class="cloud-service-desc">Unified analytics platform</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure Data Explorer</span><span class="cloud-service-desc">Fast log & telemetry analytics</span></div>
+      <div class="cloud-category">Search</div>
+      <div class="cloud-service"><span class="cloud-service-name">Azure AI Search</span><span class="cloud-service-desc">Cognitive + vector search</span></div>
+      <div class="cloud-category">Graph</div>
+      <div class="cloud-service"><span class="cloud-service-name">Cosmos DB (Gremlin)</span><span class="cloud-service-desc">Apache TinkerPop compatible</span></div>
+    </div>
+    <div class="cloud-col">
+      <div class="cloud-header"><span class="cloud-badge">🟡</span> Google Cloud Platform</div>
+      <div class="cloud-category">Relational</div>
+      <div class="cloud-service"><span class="cloud-service-name">Cloud SQL</span><span class="cloud-service-desc">MySQL, PostgreSQL, SQL Server managed</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">AlloyDB</span><span class="cloud-service-desc">Postgres compatible, AI-optimized</span></div>
+      <div class="cloud-category">NoSQL Document</div>
+      <div class="cloud-service"><span class="cloud-service-name">Cloud Firestore</span><span class="cloud-service-desc">Serverless document DB, real-time</span></div>
+      <div class="cloud-category">Key-Value / Wide Column</div>
+      <div class="cloud-service"><span class="cloud-service-name">Cloud Bigtable</span><span class="cloud-service-desc">HBase compatible, petabyte scale</span></div>
+      <div class="cloud-service"><span class="cloud-service-name">Memorystore</span><span class="cloud-service-desc">Redis & Memcached managed</span></div>
+      <div class="cloud-category">Analytics / Data Warehouse</div>
+      <div class="cloud-service"><span class="cloud-service-name">BigQuery</span><span class="cloud-service-desc">Serverless data warehouse, ML built-in</span></div>
+      <div class="cloud-category">Distributed SQL</div>
+      <div class="cloud-service"><span class="cloud-service-name">Cloud Spanner</span><span class="cloud-service-desc">Globally distributed, strong consistency</span></div>
+      <div class="cloud-category">Search</div>
+      <div class="cloud-service"><span class="cloud-service-name">Vertex AI Search</span><span class="cloud-service-desc">Enterprise + vector search</span></div>
+      <div class="cloud-category">Graph</div>
+      <div class="cloud-service"><span class="cloud-service-name">Spanner Graph</span><span class="cloud-service-desc">Graph queries on Spanner</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- K8S SECTION -->
+<section id="k8s">
+  <div class="section-header">
+    <div class="section-label">06 — Kubernetes</div>
+    <h2 class="section-title">Databases on Kubernetes</h2>
+    <p class="section-desc">Production-grade database operators, patterns, and StatefulSet strategies for K8s.</p>
+  </div>
+  <div class="k8s-grid">
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🐘</span>
+        <div><div class="k8s-name">PostgreSQL</div><div class="k8s-operator">CloudNativePG</div></div>
+      </div>
+      <p class="k8s-desc">CNCF-listed operator. Manages primary/replica topology, automated failover, WAL archiving to S3/GCS/Azure, connection pooling via PgBouncer sidecar.</p>
+      <div class="k8s-tags"><span class="k8s-tag">StatefulSet</span><span class="k8s-tag">CNCF</span><span class="k8s-tag">HA</span><span class="k8s-tag">PITR</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🐬</span>
+        <div><div class="k8s-name">MySQL</div><div class="k8s-operator">Percona Operator</div></div>
+      </div>
+      <p class="k8s-desc">Percona XtraDB Cluster operator. Group replication, ProxySQL load balancing, automated backup to S3, Monitoring via PMM.</p>
+      <div class="k8s-tags"><span class="k8s-tag">StatefulSet</span><span class="k8s-tag">XtraDB</span><span class="k8s-tag">ProxySQL</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🍃</span>
+        <div><div class="k8s-name">MongoDB</div><div class="k8s-operator">MongoDB Community Op.</div></div>
+      </div>
+      <p class="k8s-desc">Manages ReplicaSets and Sharded clusters. TLS, SCRAM auth, persistent volumes, automated recovery. Enterprise operator adds LDAP, Ops Manager.</p>
+      <div class="k8s-tags"><span class="k8s-tag">ReplicaSet</span><span class="k8s-tag">Sharding</span><span class="k8s-tag">TLS</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">📦</span>
+        <div><div class="k8s-name">Redis</div><div class="k8s-operator">Redis Operator / Spotahome</div></div>
+      </div>
+      <p class="k8s-desc">Manages Redis Sentinel, Cluster modes. Spotahome operator supports Redis 7+, ACLs, TLS, PVC management. Redis Labs operator for enterprise.</p>
+      <div class="k8s-tags"><span class="k8s-tag">Sentinel</span><span class="k8s-tag">Cluster</span><span class="k8s-tag">ACL</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🪨</span>
+        <div><div class="k8s-name">Cassandra</div><div class="k8s-operator">K8ssandra Operator</div></div>
+      </div>
+      <p class="k8s-desc">Apache Cassandra on K8s. Multi-DC topology, Medusa backups, Stargate API layer (REST/GraphQL), automated repairs via Reaper.</p>
+      <div class="k8s-tags"><span class="k8s-tag">Multi-DC</span><span class="k8s-tag">Medusa</span><span class="k8s-tag">Reaper</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">⚡</span>
+        <div><div class="k8s-name">ClickHouse</div><div class="k8s-operator">Altinity Operator</div></div>
+      </div>
+      <p class="k8s-desc">ClickHouse clusters with sharding and replication. ZooKeeper/ClickHouse Keeper managed automatically. Rolling updates, schema migrations.</p>
+      <div class="k8s-tags"><span class="k8s-tag">Sharding</span><span class="k8s-tag">Columnar</span><span class="k8s-tag">ZooKeeper</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🔴</span>
+        <div><div class="k8s-name">Elasticsearch</div><div class="k8s-operator">ECK (Elastic Cloud on K8s)</div></div>
+      </div>
+      <p class="k8s-desc">Official Elastic operator. Manages Elasticsearch, Kibana, APM Server, Fleet Server. TLS auto-provisioning, hot-warm-cold architecture.</p>
+      <div class="k8s-tags"><span class="k8s-tag">ECK</span><span class="k8s-tag">ILM</span><span class="k8s-tag">Kibana</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">🔵</span>
+        <div><div class="k8s-name">CockroachDB</div><div class="k8s-operator">CockroachDB Operator</div></div>
+      </div>
+      <p class="k8s-desc">Distributed SQL across K8s nodes. Geo-partitioning, automated rebalancing, Prometheus metrics, certificate rotation, rolling upgrades.</p>
+      <div class="k8s-tags"><span class="k8s-tag">DistSQL</span><span class="k8s-tag">Geo</span><span class="k8s-tag">CRDB</span></div>
+    </div>
+    <div class="k8s-card">
+      <div class="k8s-card-header">
+        <span class="k8s-icon">💾</span>
+        <div><div class="k8s-name">Velero — DB Backups</div><div class="k8s-operator">Backup Strategy</div></div>
+      </div>
+      <p class="k8s-desc">Use Velero with DB-specific hooks (pre/post backup scripts) for consistent snapshots. Combine with PVC snapshots for point-in-time recovery.</p>
+      <div class="k8s-tags"><span class="k8s-tag">Velero</span><span class="k8s-tag">PVC</span><span class="k8s-tag">Hooks</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CHEATSHEETS -->
+<section id="cheatsheets">
+  <div class="section-header">
+    <div class="section-label">07 — Cheatsheets</div>
+    <h2 class="section-title">Command Reference</h2>
+    <p class="section-desc">Copy-ready commands for every major database. No fluff.</p>
+  </div>
+  <div class="cheat-tabs">
+    <button class="cheat-tab active" onclick="switchCheat(this,'pg')">PostgreSQL</button>
+    <button class="cheat-tab" onclick="switchCheat(this,'mysql')">MySQL</button>
+    <button class="cheat-tab" onclick="switchCheat(this,'mongo')">MongoDB</button>
+    <button class="cheat-tab" onclick="switchCheat(this,'redis')">Redis</button>
+    <button class="cheat-tab" onclick="switchCheat(this,'cassandra')">Cassandra</button>
+  </div>
+  <div id="cheat-pg" class="cheat-panel active">
+    <div class="cheat-grid">
+      <div class="cheat-block">
+        <div class="cheat-block-header">Connection<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code"><span class="cheat-comment"># Connect to PostgreSQL</span>
+psql <span class="cheat-flag">-h</span> <span class="cheat-arg">hostname</span> <span class="cheat-flag">-U</span> <span class="cheat-arg">username</span> <span class="cheat-flag">-d</span> <span class="cheat-arg">dbname</span>
+psql <span class="cheat-arg">postgresql://user:pass@host/db</span>
+
+<span class="cheat-comment"># With SSL</span>
+psql <span class="cheat-arg">"sslmode=require host=db user=app"</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Database Operations<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">\l              <span class="cheat-comment">-- list databases</span>
+\c <span class="cheat-arg">dbname</span>        <span class="cheat-comment">-- connect to db</span>
+\dt             <span class="cheat-comment">-- list tables</span>
+\d <span class="cheat-arg">tablename</span>    <span class="cheat-comment">-- describe table</span>
+\du             <span class="cheat-comment">-- list users</span>
+\timing         <span class="cheat-comment">-- toggle timing</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">User & Permissions<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">CREATE USER <span class="cheat-arg">app</span> WITH PASSWORD <span class="cheat-arg">'pass'</span>;
+CREATE DATABASE <span class="cheat-arg">mydb</span> OWNER <span class="cheat-arg">app</span>;
+GRANT ALL ON DATABASE <span class="cheat-arg">mydb</span> TO <span class="cheat-arg">app</span>;
+GRANT SELECT ON ALL TABLES IN SCHEMA
+  <span class="cheat-arg">public</span> TO <span class="cheat-arg">readonly</span>;
+ALTER USER <span class="cheat-arg">app</span> CREATEDB;</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Backup & Restore<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code"><span class="cheat-comment"># Backup</span>
+pg_dump <span class="cheat-flag">-Fc</span> <span class="cheat-arg">mydb</span> <span class="cheat-flag">></span> <span class="cheat-arg">mydb.dump</span>
+pg_dumpall <span class="cheat-flag">></span> <span class="cheat-arg">all.sql</span>
+
+<span class="cheat-comment"># Restore</span>
+pg_restore <span class="cheat-flag">-d</span> <span class="cheat-arg">mydb</span> <span class="cheat-arg">mydb.dump</span>
+psql <span class="cheat-arg">mydb</span> <span class="cheat-flag"><</span> <span class="cheat-arg">mydb.sql</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Performance<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code"><span class="cheat-comment">-- slow queries</span>
+SELECT query, mean_exec_time, calls
+FROM pg_stat_statements
+ORDER BY mean_exec_time DESC LIMIT 10;
+
+<span class="cheat-comment">-- table bloat</span>
+SELECT relname, n_dead_tup FROM pg_stat_user_tables
+ORDER BY n_dead_tup DESC;</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Replication Status<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code"><span class="cheat-comment">-- on primary</span>
+SELECT * FROM pg_stat_replication;
+
+<span class="cheat-comment">-- replication lag</span>
+SELECT now() - pg_last_xact_replay_timestamp()
+  AS replication_delay;
+
+<span class="cheat-comment">-- is standby?</span>
+SELECT pg_is_in_recovery();</div>
+      </div>
+    </div>
+  </div>
+  <div id="cheat-mysql" class="cheat-panel">
+    <div class="cheat-grid">
+      <div class="cheat-block">
+        <div class="cheat-block-header">Connection<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">mysql <span class="cheat-flag">-h</span> <span class="cheat-arg">host</span> <span class="cheat-flag">-u</span> <span class="cheat-arg">root</span> <span class="cheat-flag">-p</span>
+mysql <span class="cheat-flag">-u</span> <span class="cheat-arg">root</span> <span class="cheat-flag">-p</span> <span class="cheat-arg">mydb</span>
+
+<span class="cheat-comment"># Connection string</span>
+mysql <span class="cheat-arg">mysql://user:pass@host:3306/db</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Database Operations<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">SHOW DATABASES;
+USE <span class="cheat-arg">mydb</span>;
+SHOW TABLES;
+DESCRIBE <span class="cheat-arg">tablename</span>;
+SHOW FULL PROCESSLIST;
+SHOW STATUS LIKE <span class="cheat-arg">'Threads%'</span>;</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Backup & Restore<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code"><span class="cheat-comment"># Backup</span>
+mysqldump <span class="cheat-flag">-u root -p</span> <span class="cheat-arg">mydb</span> <span class="cheat-flag">></span> <span class="cheat-arg">mydb.sql</span>
+mysqldump <span class="cheat-flag">--all-databases ></span> <span class="cheat-arg">all.sql</span>
+
+<span class="cheat-comment"># Restore</span>
+mysql <span class="cheat-flag">-u root -p</span> <span class="cheat-arg">mydb</span> <span class="cheat-flag"><</span> <span class="cheat-arg">mydb.sql</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Replication<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">SHOW MASTER STATUS\\G
+SHOW SLAVE STATUS\\G
+SHOW REPLICA STATUS\\G    <span class="cheat-comment">-- MySQL 8+</span>
+START REPLICA;
+STOP REPLICA;</div>
+      </div>
+    </div>
+  </div>
+  <div id="cheat-mongo" class="cheat-panel">
+    <div class="cheat-grid">
+      <div class="cheat-block">
+        <div class="cheat-block-header">Connection & Shell<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">mongosh <span class="cheat-arg">"mongodb://host:27017/db"</span>
+mongosh <span class="cheat-flag">--tls --tlsCertificateKeyFile</span> <span class="cheat-arg">cert.pem</span>
+
+show dbs
+use <span class="cheat-arg">mydb</span>
+show collections</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">CRUD Operations<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">db.<span class="cheat-arg">col</span>.insertOne({name:<span class="cheat-arg">"Eknatha"</span>})
+db.<span class="cheat-arg">col</span>.find({name:<span class="cheat-arg">"Eknatha"</span>}).pretty()
+db.<span class="cheat-arg">col</span>.updateOne({<span class="cheat-arg">_id</span>:x},{$set:{age:<span class="cheat-arg">30</span>}})
+db.<span class="cheat-arg">col</span>.deleteMany({status:<span class="cheat-arg">"inactive"</span>})
+db.<span class="cheat-arg">col</span>.countDocuments()</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">ReplicaSet Status<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">rs.status()
+rs.isMaster()           <span class="cheat-comment">// deprecated</span>
+db.isMaster()
+rs.printReplicationInfo()
+rs.add(<span class="cheat-arg">"host:27017"</span>)</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Backup<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">mongodump <span class="cheat-flag">--uri</span> <span class="cheat-arg">"mongodb://host/db"</span> <span class="cheat-flag">\
+  --out</span> <span class="cheat-arg">/backup/</span>
+
+mongorestore <span class="cheat-flag">--uri</span> <span class="cheat-arg">"mongodb://host"</span> <span class="cheat-flag">\
+  --dir</span> <span class="cheat-arg">/backup/db</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="cheat-redis" class="cheat-panel">
+    <div class="cheat-grid">
+      <div class="cheat-block">
+        <div class="cheat-block-header">Connection & Keys<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">redis-cli <span class="cheat-flag">-h</span> <span class="cheat-arg">host</span> <span class="cheat-flag">-p</span> <span class="cheat-arg">6379</span> <span class="cheat-flag">-a</span> <span class="cheat-arg">password</span>
+redis-cli <span class="cheat-flag">--tls -h</span> <span class="cheat-arg">host</span>
+
+KEYS <span class="cheat-arg">pattern*</span>       <span class="cheat-comment"># avoid in prod!</span>
+SCAN <span class="cheat-arg">0</span> MATCH <span class="cheat-arg">user:*</span> COUNT <span class="cheat-arg">100</span>
+TTL <span class="cheat-arg">key</span>
+TYPE <span class="cheat-arg">key</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Data Structures<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">SET <span class="cheat-arg">key value</span> EX <span class="cheat-arg">3600</span>
+GET <span class="cheat-arg">key</span>
+HSET <span class="cheat-arg">user:1</span> name <span class="cheat-arg">Eknatha</span>
+LPUSH <span class="cheat-arg">queue</span> <span class="cheat-arg">item1</span>
+SADD <span class="cheat-arg">tags</span> <span class="cheat-arg">devops</span> <span class="cheat-arg">k8s</span>
+ZADD <span class="cheat-arg">leaderboard</span> <span class="cheat-arg">100</span> <span class="cheat-arg">user1</span></div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Admin & Monitor<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">INFO server
+INFO memory
+INFO replication
+INFO keyspace
+MONITOR               <span class="cheat-comment"># live commands</span>
+SLOWLOG GET <span class="cheat-arg">10</span>
+CLIENT LIST</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Cluster & Sentinel<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">CLUSTER INFO
+CLUSTER NODES
+SENTINEL masters
+SENTINEL slaves <span class="cheat-arg">mymaster</span>
+SENTINEL failover <span class="cheat-arg">mymaster</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="cheat-cassandra" class="cheat-panel">
+    <div class="cheat-grid">
+      <div class="cheat-block">
+        <div class="cheat-block-header">CQL Shell<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">cqlsh <span class="cheat-arg">host</span> <span class="cheat-flag">-u</span> <span class="cheat-arg">cassandra</span> <span class="cheat-flag">-p</span> <span class="cheat-arg">password</span>
+DESCRIBE KEYSPACES;
+USE <span class="cheat-arg">mykeyspace</span>;
+DESCRIBE TABLES;
+DESCRIBE TABLE <span class="cheat-arg">mytable</span>;</div>
+      </div>
+      <div class="cheat-block">
+        <div class="cheat-block-header">Cluster Status<button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="cheat-code">nodetool status
+nodetool ring
+nodetool info
+nodetool tpstats
+nodetool compactionstats
+nodetool repair <span class="cheat-arg">keyspace</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LEARNING PATHS -->
+<section id="paths">
+  <div class="section-header">
+    <div class="section-label">08 — Learning</div>
+    <h2 class="section-title">Learning Paths</h2>
+    <p class="section-desc">Structured paths from zero to production-ready for DevOps & Platform Engineers.</p>
+  </div>
+  <div class="paths-grid">
+    <div class="path-card">
+      <div class="path-number">01</div>
+      <div class="path-level" style="color:var(--accent3)">🌱 Beginner</div>
+      <div class="path-title">DB Fundamentals for DevOps</div>
+      <p class="path-desc">Understand database concepts, SQL basics, and how databases fit into modern application stacks.</p>
+      <ul class="path-steps">
+        <li class="path-step"><span class="path-step-num" style="background:rgba(0,212,170,0.15);color:var(--accent3)">1</span>ACID properties & CAP theorem</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(0,212,170,0.15);color:var(--accent3)">2</span>SQL vs NoSQL — when to use each</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(0,212,170,0.15);color:var(--accent3)">3</span>Indexes, joins, and query basics</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(0,212,170,0.15);color:var(--accent3)">4</span>Connection pooling concepts</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(0,212,170,0.15);color:var(--accent3)">5</span>Backup & restore fundamentals</li>
+      </ul>
+    </div>
+    <div class="path-card">
+      <div class="path-number">02</div>
+      <div class="path-level" style="color:var(--accent)">🔧 Intermediate</div>
+      <div class="path-title">PostgreSQL for Production</div>
+      <p class="path-desc">Deep dive into PostgreSQL — the de facto standard for most product companies. Ops-focused.</p>
+      <ul class="path-steps">
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">1</span>postgresql.conf tuning (memory, WAL)</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">2</span>Replication — streaming & logical</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">3</span>Patroni HA setup</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">4</span>pg_stat_statements & slow query tuning</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">5</span>Backup with pgBackRest / Barman</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(79,142,247,0.15);color:var(--accent)">6</span>pgvector for AI/ML workloads</li>
+      </ul>
+    </div>
+    <div class="path-card">
+      <div class="path-number">03</div>
+      <div class="path-level" style="color:var(--accent2)">☸️ Advanced</div>
+      <div class="path-title">Databases on Kubernetes</div>
+      <p class="path-desc">Run stateful databases reliably on Kubernetes using operators, StatefulSets, and GitOps.</p>
+      <ul class="path-steps">
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">1</span>StatefulSets vs Deployments</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">2</span>PV / PVC / StorageClass design</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">3</span>CloudNativePG operator setup</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">4</span>Velero backup with DB hooks</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">5</span>Monitoring with Prometheus exporters</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(124,95,230,0.15);color:var(--accent2)">6</span>GitOps for DB config management</li>
+      </ul>
+    </div>
+    <div class="path-card">
+      <div class="path-number">04</div>
+      <div class="path-level" style="color:var(--accent4)">☁️ Cloud Expert</div>
+      <div class="path-title">Cloud Database Operations</div>
+      <p class="path-desc">Master managed database services on AWS, Azure, and GCP for Platform Engineering.</p>
+      <ul class="path-steps">
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">1</span>RDS vs Aurora — when to use each</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">2</span>Multi-AZ vs Read Replicas</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">3</span>Connection pooling with RDS Proxy</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">4</span>Terraform for RDS/CloudSQL provisioning</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">5</span>Cost optimization — instance right-sizing</li>
+        <li class="path-step"><span class="path-step-num" style="background:rgba(247,114,79,0.15);color:var(--accent4)">6</span>DynamoDB — capacity planning & GSIs</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AI ADVISOR -->
+<section id="advisor">
+  <div class="section-header">
+    <div class="section-label">09 — AI Advisor</div>
+    <h2 class="section-title">Ask the DB Advisor</h2>
+    <p class="section-desc">Describe your use case — get an instant recommendation powered by a built-in offline knowledge base. No internet required.</p>
+  </div>
+  <div class="advisor-wrap">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;font-size:0.75rem;color:var(--accent3);background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.2);border-radius:8px;padding:8px 14px;">
+      <span>✦</span> <span>Offline Knowledge Base — covers 10 use case categories, 25+ databases, K8s operators, cloud services</span>
+    </div>
+    <div class="advisor-examples">
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">E-commerce with 10M users</button>
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">Real-time analytics dashboard</button>
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">Social network friend graph</button>
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">IoT sensor data at scale</button>
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">Session cache for microservices</button>
+      <button class="advisor-example" onclick="setAdvisorPrompt(this.textContent)">Audit log with time-based queries</button>
+    </div>
+    <div class="advisor-input-row">
+      <input class="advisor-input" id="advisor-input" type="text" placeholder="Describe your use case... e.g. 'multi-tenant SaaS with complex reporting'">
+      <button class="advisor-btn" id="advisor-btn" onclick="askAdvisor()">Analyze ✦</button>
+    </div>
+    <div class="advisor-output thinking" id="advisor-output">Your AI-powered database recommendation will appear here. Try one of the examples above or type your own use case.</div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TOOLS DIRECTORY - FULLY FUNCTIONAL OFFLINE -->
+<section id="tools">
+  <div class="section-header">
+    <div class="section-label">10 — Tools</div>
+    <h2 class="section-title">DB Tools Directory</h2>
+    <p class="section-desc">12 fully functional database tools — all offline, all embedded. Click any tool to open it.</p>
+  </div>
+  <div class="tools-grid" id="tools-grid"></div>
+</section>
+
+<!-- TOOL MODAL -->
+<div class="tool-modal-overlay" id="tool-modal-overlay" onclick="closeToolModal()">
+  <div class="tool-modal" onclick="event.stopPropagation()">
+    <div class="tool-modal-header">
+      <div class="tool-modal-title" id="tool-modal-title"></div>
+      <button class="tool-modal-close" onclick="closeToolModal()">✕</button>
+    </div>
+    <div class="tool-modal-body" id="tool-modal-body"></div>
+  </div>
+</div>
+
+
+<!-- TUTORIALS SECTION -->
+<!-- TUTORIALS SECTION -->
+<section id="tutorials" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">11 — Tutorials</div>
+    <h2 class="section-title">Full Database Tutorials</h2>
+    <p class="section-desc">Complete step-by-step guides — install, configure, operate, and deploy every major database on Kubernetes.</p>
+  </div>
+  <div class="tut-layout">
+    <aside class="tut-sidebar">
+      <div class="tut-search-wrap">
+        <input class="tut-search" type="text" placeholder="Search tutorials..." id="tut-search" oninput="filterTutorials(this.value)">
+      </div>
+      <div id="tut-nav"></div>
+    </aside>
+    <div class="tut-content" id="tut-content">
+      <div class="tut-welcome">
+        <div style="font-size:3rem;margin-bottom:1rem">📖</div>
+        <div class="tut-welcome-title">Select a Tutorial</div>
+        <div class="tut-welcome-sub">Choose any database from the sidebar to start learning. Each tutorial covers installation, core concepts, commands, K8s deployment, monitoring, and troubleshooting.</div>
+        <div class="tut-welcome-tags">
+          <span onclick="loadTutorial('postgresql')" class="tut-quick-tag">🐘 PostgreSQL</span>
+          <span onclick="loadTutorial('mysql')" class="tut-quick-tag">🐬 MySQL</span>
+          <span onclick="loadTutorial('mongodb')" class="tut-quick-tag">🍃 MongoDB</span>
+          <span onclick="loadTutorial('redis')" class="tut-quick-tag">📦 Redis</span>
+          <span onclick="loadTutorial('cassandra')" class="tut-quick-tag">🪨 Cassandra</span>
+          <span onclick="loadTutorial('clickhouse')" class="tut-quick-tag">⚡ ClickHouse</span>
+          <span onclick="loadTutorial('elasticsearch')" class="tut-quick-tag">🔍 Elasticsearch</span>
+          <span onclick="loadTutorial('neo4j')" class="tut-quick-tag">🕸️ Neo4j</span>
+          <span onclick="loadTutorial('timescaledb')" class="tut-quick-tag">⏱️ TimescaleDB</span>
+          <span onclick="loadTutorial('cockroachdb')" class="tut-quick-tag">🪲 CockroachDB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- QUERY EXPLAINER -->
+<section id="query-explainer" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">12 — Query Explainer</div>
+    <h2 class="section-title">SQL Query Explainer</h2>
+    <p class="section-desc">Paste any SQL query and get a plain-English breakdown of every clause, what it does, indexes it needs, and potential issues.</p>
+  </div>
+  <div class="qex-wrap">
+    <div class="qex-top">
+      <div class="qex-input-side">
+        <div class="qex-label">Paste your SQL query</div>
+        <textarea class="qex-textarea" id="qex-input" placeholder="SELECT u.name, COUNT(o.id) AS order_count, SUM(o.total) AS revenue
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.created_at > '2026-01-01'
+  AND o.status = 'completed'
+GROUP BY u.name
+HAVING COUNT(o.id) > 5
+ORDER BY revenue DESC
+LIMIT 20;"></textarea>
+        <div class="qex-actions">
+          <div class="qex-examples">
+            <span class="qex-example-label">Try:</span>
+            <button class="qex-ex-btn" onclick="qexLoad('simple')">Simple SELECT</button>
+            <button class="qex-ex-btn" onclick="qexLoad('join')">JOIN query</button>
+            <button class="qex-ex-btn" onclick="qexLoad('window')">Window function</button>
+            <button class="qex-ex-btn" onclick="qexLoad('cte')">CTE</button>
+            <button class="qex-ex-btn" onclick="qexLoad('subquery')">Subquery</button>
+          </div>
+          <button class="qex-btn" onclick="explainQuery()">Explain This Query ✦</button>
+        </div>
+      </div>
+      <div class="qex-output-side" id="qex-output">
+        <div class="qex-placeholder">
+          <div style="font-size:2rem;margin-bottom:.75rem">🔍</div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:.4rem">Query breakdown will appear here</div>
+          <div style="font-size:.82rem;color:var(--text3)">Paste a SQL query on the left and click Explain</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GLOSSARY -->
+<section id="glossary" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">13 — Glossary</div>
+    <h2 class="section-title">Database Glossary</h2>
+    <p class="section-desc">100+ database terms explained in plain English for DevOps & Platform Engineers.</p>
+  </div>
+  <div class="glos-search-wrap">
+    <input class="search-bar" type="text" id="glos-search" placeholder="Search terms — try 'ACID', 'WAL', 'sharding', 'B-tree'..." oninput="filterGlossary(this.value)">
+  </div>
+  <div class="glos-filter-row">
+    <button class="filter-tag active" onclick="glosCategory(this,'all')">All</button>
+    <button class="filter-tag" onclick="glosCategory(this,'core')">Core Concepts</button>
+    <button class="filter-tag" onclick="glosCategory(this,'storage')">Storage & I/O</button>
+    <button class="filter-tag" onclick="glosCategory(this,'replication')">Replication & HA</button>
+    <button class="filter-tag" onclick="glosCategory(this,'performance')">Performance</button>
+    <button class="filter-tag" onclick="glosCategory(this,'k8s')">K8s & Cloud</button>
+    <button class="filter-tag" onclick="glosCategory(this,'nosql')">NoSQL</button>
+  </div>
+  <div class="glos-grid" id="glos-grid"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ISOLATION LAB -->
+<section id="isolation" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">14 — Isolation Lab</div>
+    <h2 class="section-title">Transaction Isolation Visualizer</h2>
+    <p class="section-desc">Step through the five classic concurrency anomalies across two live transaction sessions, and watch exactly which isolation levels prevent them — and which quietly do not.</p>
+  </div>
+  <div id="iso-controls"></div>
+  <div id="isolation-body"></div>
+  <div class="iso-matrix-wrap">
+    <div class="iso-picker-label">Anomaly × Isolation Level Matrix</div>
+    <div id="iso-matrix"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DB KNOWLEDGE QUIZ -->
+<section id="quiz" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">15 — Quiz</div>
+    <h2 class="section-title">DB Knowledge Quiz</h2>
+    <p class="section-desc">Test your database knowledge across all categories. 200+ questions, scored, with detailed explanations.</p>
+  </div>
+  <div class="quiz-wrap" id="quiz-wrap">
+    <div class="quiz-start" id="quiz-start">
+      <div style="font-size:3rem;margin-bottom:1rem">🧠</div>
+      <div class="quiz-start-title">Ready to test your DB knowledge?</div>
+      <div class="quiz-start-sub">200+ questions across PostgreSQL, MySQL, MongoDB, Redis, Cassandra, ClickHouse, vector databases, cloud warehouses, transactions, security, K8s operators, and more. Each question has a detailed explanation.</div>
+      <div class="quiz-category-pick">
+        <div class="quiz-cat-label">Choose category:</div>
+        <div class="quiz-cats">
+          <button class="quiz-cat-btn active" onclick="selectQuizCat(this,'all')">All Topics</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'sql')">SQL & Relational</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'nosql')">NoSQL</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'perf')">Performance</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'k8s')">K8s & Operators</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'replication')">Replication & HA</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'transactions')">Transactions & Isolation</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'vector')">Vector & AI</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'cloud')">Cloud & Warehouse</button>
+          <button class="quiz-cat-btn" onclick="selectQuizCat(this,'security')">Security & Ops</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:1.5rem" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+    <div class="quiz-active" id="quiz-active" style="display:none">
+      <div class="quiz-header-row">
+        <div class="quiz-progress-wrap">
+          <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-prog-fill"></div></div>
+          <div class="quiz-prog-text" id="quiz-prog-text">Question 1 of 10</div>
+        </div>
+        <div class="quiz-score-badge" id="quiz-score-badge">Score: 0</div>
+      </div>
+      <div class="quiz-q-wrap" id="quiz-q-wrap"></div>
+    </div>
+    <div class="quiz-result" id="quiz-result" style="display:none"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DAILY DB CHALLENGE -->
+<section id="daily-challenge" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">16 — Daily Challenge</div>
+    <h2 class="section-title">Daily DB Challenge</h2>
+    <p class="section-desc">One new database challenge every day. Track your streak and progress.</p>
+  </div>
+  <div class="daily-layout">
+    <div class="daily-main">
+      <div class="daily-card" id="daily-card"></div>
+    </div>
+    <div class="daily-sidebar">
+      <div class="daily-streak-card">
+        <div class="daily-streak-num" id="streak-num">0</div>
+        <div class="daily-streak-label">Day Streak 🔥</div>
+      </div>
+      <div class="daily-history-card">
+        <div class="daily-hist-title">Recent Challenges</div>
+        <div id="daily-history"></div>
+      </div>
+      <div class="daily-cats-card">
+        <div class="daily-hist-title">Challenge Topics</div>
+        <div class="daily-topic-grid" id="daily-topics"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- DATA TYPE PICKER -->
+<section id="datatype-picker" style="max-width:1300px;margin:0 auto;padding:5rem 2rem;position:relative;z-index:1;">
+  <div class="section-header">
+    <div class="section-label">17 — Data Type Picker</div>
+    <h2 class="section-title">Data Type Picker</h2>
+    <p class="section-desc">Describe what you need to store and get the right column type across PostgreSQL, MySQL, MongoDB, Cassandra, and DynamoDB — with storage size, constraints, and caveats.</p>
+  </div>
+
+  <div class="dtp-wrap">
+    <!-- Left: Input panel -->
+    <div class="dtp-left">
+      <div class="dtp-label">What do you need to store?</div>
+
+      <div class="dtp-category-grid" id="dtp-categories"></div>
+
+      <div class="dtp-divider-label">— or describe it —</div>
+
+      <div class="dtp-search-wrap">
+        <input class="dtp-search" id="dtp-search" type="text"
+          placeholder="e.g. email address, price, user ID, timestamp, JSON config..."
+          oninput="dtpSearch(this.value)">
+      </div>
+
+      <div class="dtp-quick-row">
+        <span class="dtp-quick-label">Quick picks:</span>
+        <button class="dtp-quick" onclick="dtpLoad('email')">Email</button>
+        <button class="dtp-quick" onclick="dtpLoad('price')">Price / Money</button>
+        <button class="dtp-quick" onclick="dtpLoad('uuid')">UUID / ID</button>
+        <button class="dtp-quick" onclick="dtpLoad('timestamp')">Timestamp</button>
+        <button class="dtp-quick" onclick="dtpLoad('boolean')">True/False</button>
+        <button class="dtp-quick" onclick="dtpLoad('json')">JSON / Config</button>
+        <button class="dtp-quick" onclick="dtpLoad('ip')">IP Address</button>
+        <button class="dtp-quick" onclick="dtpLoad('url')">URL</button>
+        <button class="dtp-quick" onclick="dtpLoad('image')">Image / File</button>
+        <button class="dtp-quick" onclick="dtpLoad('coordinates')">Lat / Lng</button>
+        <button class="dtp-quick" onclick="dtpLoad('phone')">Phone Number</button>
+        <button class="dtp-quick" onclick="dtpLoad('counter')">Counter / Score</button>
+        <button class="dtp-quick" onclick="dtpLoad('vector')">ML Vector / Embedding</button>
+        <button class="dtp-quick" onclick="dtpLoad('enum')">Enum / Status</button>
+        <button class="dtp-quick" onclick="dtpLoad('full-text')">Full-Text Content</button>
+        <button class="dtp-quick" onclick="dtpLoad('tags')">Tags / Array</button>
+      </div>
+    </div>
+
+    <!-- Right: Results panel -->
+    <div class="dtp-right" id="dtp-result">
+      <div class="dtp-placeholder">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🗂️</div>
+        <div style="font-weight:600;color:var(--text);margin-bottom:.4rem">Select a data type</div>
+        <div style="font-size:.82rem;color:var(--text3)">Pick a category or type your use case on the left</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">eknathalabs / db</div>
+  <p class="footer-sub">Built with ♥ by Eknatha Reddy — Platform Engineer & DevOps Practitioner</p>
+
+  <div class="footer-links">
+    <a href="https://eknathalabs.com" target="_blank">eknathalabs.com</a>
+    <a href="https://github.com/eknatha" target="_blank">GitHub</a>
+    <a href="https://linux.eknathalabs.com" target="_blank">Linux Lab</a>
+    <a href="https://kubelab.eknathalabs.com" target="_blank">KubeLab</a>
+    <a href="https://terraform.eknathalabs.com" target="_blank">Terraform Lab</a>
+    <a href="https://blog.eknathalabs.com" target="_blank">Blog</a>
+  </div>
+  <p class="footer-copy">© 2026 EknathLabs — db.eknathalabs.com — All databases, all patterns, one place.</p>
+</footer>
+
+
+<script src="js/theme.js"></script>
+<script src="js/data/databases.js"></script>
+<script src="js/encyclopedia.js"></script>
+<script src="js/wizard.js"></script>
+<script src="js/advisor.js"></script>
+<script src="js/core.js"></script>
+<script src="js/data/tutorials.js"></script>
+<script src="js/tutorials.js"></script>
+<script src="js/query-explainer.js"></script>
+<script src="js/glossary.js"></script>
+<script src="js/data/quiz-questions.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/daily-challenge.js"></script>
+<script src="js/datatype-picker.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/tools/isolation-visualizer.js"></script>
+<script src="js/visitor-counter.js"></script>
+</body>
+</html>
